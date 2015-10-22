@@ -130,8 +130,10 @@ void Moteur::supprimerRegle(BaseDeConnaissances *base, Regle *r)
     //Curseur pour parcourir la liste (on le met au début de la liste)
     Regle *curseur = base->getDebut();
 
+    bool sortir = false;
+
     //Tant qu'on est pas à la fin de la liste, on continue
-    while(curseur!=NULL)
+    while(!sortir)
     {
         if(curseur->getSuivant() == r)
         {
@@ -140,14 +142,17 @@ void Moteur::supprimerRegle(BaseDeConnaissances *base, Regle *r)
         }
         else
         {
-            curseur = curseur->getSuivant();
+            if(curseur->getSuivant() == NULL)
+                sortir = true;
+            else
+                curseur = curseur->getSuivant();
         }
     }
 }
 
 
 /* Méthode qui réalise un chaînage arrière sur la base de connaissance passée en paramètre, et à partir d'un ou plusieurs buts, passés en paramètres */
-std::vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Element *> &conclusions)
+vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Element> &conclusions)
 {
     //Vecteur qu'on va retourner, avec la liste des éléments ajoutés à la base de faits
     vector<Element> faitsAjoutes;
@@ -158,7 +163,7 @@ std::vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<E
     //Tant qu'il y a des conclusions, on exécute le chaînage arrière
     for(unsigned i=0; i < conclusions.size(); i++){
         //Initialisation du chaînage arrière
-        initChainageArriere(base, conclusions[i], faitsAjoutes);
+        initChainageArriere(base, &conclusions[i], faitsAjoutes);
     }
 
     return faitsAjoutes;
@@ -168,6 +173,7 @@ std::vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<E
 /* Effectue le chaînage arrière pour un but donné */
 void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector<Element> &faitsAjoutes)
 {
+    cout << but->toString();
     //Initialisation de la base de faits
     vector<Element> BF = base->getBaseDeFaits();
 

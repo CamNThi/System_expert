@@ -291,6 +291,11 @@ vector<Regle*> &BaseDeConnaissances::getReglesAppliquees()
     return reglesAppliquees;
 }
 
+vector<Element> &BaseDeConnaissances::getBut()
+{
+    return buts;
+}
+
 
 /* Modificateur */
 void BaseDeConnaissances::setDebut(Regle *r)
@@ -298,3 +303,9 @@ void BaseDeConnaissances::setDebut(Regle *r)
     debut = r;
 }
 
+void BaseDeConnaissances::setBut(Element &e)
+{
+
+        buts.push_back(e);
+
+}

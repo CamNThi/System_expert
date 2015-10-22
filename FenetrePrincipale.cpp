@@ -266,7 +266,7 @@ void FenetrePrincipale::chainageArriere()
     fenetreChainageArriere->exec();
 
     //Cas où la base de règles n'est pas remplie, on affiche un message d'erreur
-    /*if(baseDeConnaissances->getDebut()==NULL)
+    if(baseDeConnaissances->getDebut()==NULL)
     {
         message->setText("Erreur dans l'execution du chainage arriere, la base de regles est vide.\nCliquez sur \"Initialiser base de regles\".");
         message->setStyleSheet("color: red");
@@ -282,15 +282,17 @@ void FenetrePrincipale::chainageArriere()
         //Création du moteur
         Moteur moteur;
 
-        vector<Element *> el;
+        vector<Element> el;
         Element element;
         element.setAttribut("Temps");
         element.setOperateur("=");
         element.setValeur("pluie");
-        el.push_back(&element);
+        el.push_back(element);
+
+        cout << "aaaa"+baseDeConnaissances->getBut()[0].toString();
 
         //On effectue le chaînage arrière en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur.chainageArriere(baseDeConnaissances, el);
+        vector<Element> e = moteur.chainageArriere(baseDeConnaissances, baseDeConnaissances->getBut());
 
         //Mise à jour de la base de faits
         refreshBF();
@@ -304,7 +306,7 @@ void FenetrePrincipale::chainageArriere()
 
         //Fenêtre qui affiche les traces du chaînage
         afficherTracesChainage(e);
-    }*/
+    }
 }
 
 

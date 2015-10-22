@@ -17,7 +17,7 @@ class Moteur
         //Méthode qui réalise un chaînage avant sur la base de connaissance et qui renvoie les éléments ajoutés à la base de faits
         std::vector<Element> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
         //Méthode qui lance le chaînage arrière sur la base de connaissance, et pour une liste de buts
-        std::vector<Element> chainageArriere(BaseDeConnaissances *base, std::vector<Element *> &conclusions);
+        std::vector<Element> chainageArriere(BaseDeConnaissances *base, std::vector<Element> &conclusions);
         //Effectue le chaînage arrière pour un but donné
         void initChainageArriere(BaseDeConnaissances *base, Element *but, std::vector<Element> &faitsAjoutes);
         //Vérifie l'existence d'un élément de conclusion dans un vecteur d'élément

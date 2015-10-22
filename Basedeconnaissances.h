@@ -40,8 +40,10 @@ class BaseDeConnaissances
         Regle *getDebut();
         std::vector<Element> &getBaseDeFaits();
         std::vector<Regle *> &getReglesAppliquees();
+        std::vector<Element> &getBut();
         //Modificateur
         void setDebut(Regle *r);
+        void setBut(Element &e);
 
     private:
         //Eléments qui servira de repère dans la liste chainée
@@ -50,6 +52,8 @@ class BaseDeConnaissances
         std::vector<Element> baseDeFaits;
         //Tableau qui contient les règles appliquées pendant le chainage
         std::vector<Regle*> reglesAppliquees;
+        //Tableau qui contient les buts pour le chaînage arrière
+        std::vector<Element> buts;
 };
 
 #endif

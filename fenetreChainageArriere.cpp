@@ -4,14 +4,14 @@ using namespace std;
 
 
 /* Widget qui servira de fenêtre secondaire pour permettre à l'utilisateur d'initialiser les buts */
-FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *base) : QDialog()
+FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog()
 {
     //Création des labels
-    label1 = new QLabel("Elements extraits de la base de regles. Selectionnez les buts a atteindre: ");
-    label2 = new QLabel("Buts a atteindre: ");
-    layout_bouton = new QHBoxLayout;
+    label = new QLabel("Elements extraits de la base de regles. Selectionnez les buts a atteindre: ");
+    //Création de la liste déroulante
+    listeButs = new QComboBox;
     //On va récupérer tous les éléments de façon unique
-    Regle *curseur = base->getDebut(); //Curseur pour parcourir la liste (on le met au début de la liste)
+    Regle *curseur = b->getDebut(); //Curseur pour parcourir la liste (on le met au début de la liste)
     //Tant qu'on est pas à la fin de la liste, on continue
     while(curseur!=NULL)
     {
@@ -25,20 +25,26 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *base) : QDia
         }
         curseur = curseur->getSuivant();
     }
-    //Création des boutons: un élément par bouton
+    //On remplit la liste déroulante
     for(unsigned int k=0; k<liste_buts.size(); k++)
     {
         string stringListe = liste_buts[k].toString();
         QString but = QString::fromStdString(stringListe);
-        QPushButton *bouton = new QPushButton;
-        bouton->setText(but);
-        layout_bouton->addWidget(bouton);
+        listeButs->addItem(but);
+        connect(listeButs,SIGNAL(activated(int)),this,SLOT(retenirButs(int)));
     }
+    listeButs->setFixedSize(500, 50);
     layout_global = new QVBoxLayout;
-    layout_global->addWidget(label1);
-    layout_global->addLayout(layout_bouton);
-    layout_global->addWidget(label2);
-    buts = new QTextEdit;
-    layout_global->addWidget(buts);
+    layout_global->addWidget(label);
+    layout_global->addWidget(listeButs);
     setLayout(layout_global);
+
+    base = b;
+}
+
+
+void FenetreChainageArriere::retenirButs(int but)
+{
+    base->setBut(liste_buts[but]);
+    this->close();
 }

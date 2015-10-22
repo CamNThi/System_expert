@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTextEdit>
+#include <QComboBox>
+#include <QLineEdit>
 
 #include <vector>
 
@@ -16,16 +18,21 @@
 /* Fenêtre qui va permettre à l'utilisateur d'initialiser les buts pour le chaînage arrière */
 class FenetreChainageArriere : public QDialog
 {
+    //Macro pour créer le slot personnalisé
+    Q_OBJECT
+
+    public slots:
+    void retenirButs(int but);
+
     public:
         FenetreChainageArriere(BaseDeConnaissances *base);
 
     private:
-        QLabel *label1;
-        QHBoxLayout *layout_bouton;
-        QLabel *label2;
-        QTextEdit *buts;
+        QLabel *label;
+        QComboBox *listeButs;
         QVBoxLayout *layout_global;
         std::vector<Element> liste_buts;
+        BaseDeConnaissances *base;
 };
 
 #endif

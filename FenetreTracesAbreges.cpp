@@ -81,7 +81,7 @@ void FenetreTracesAbreges::afficherTracesCompletes()
     regles_appliquees.setReadOnly(true);
     //On récupère les faits déduits
     std::string faitsString = "";
-    for(int i=0; i<elements.size(); i++)
+    for(unsigned int i=0; i<elements.size(); i++)
     {
         faitsString += elements[i].toString();
         faitsString+="\n";
