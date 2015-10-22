@@ -1,4 +1,4 @@
-#include "fenetreChainageArriere.h"
+#include "FenetreChainageArriere.h"
 
 using namespace std;
 
@@ -10,6 +10,7 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
     label = new QLabel("Elements extraits de la base de regles. Selectionnez les buts a atteindre: ");
     //Création de la liste déroulante
     listeButs = new QComboBox;
+
     //On va récupérer tous les éléments de façon unique
     Regle *curseur = b->getDebut(); //Curseur pour parcourir la liste (on le met au début de la liste)
     //Tant qu'on est pas à la fin de la liste, on continue
@@ -17,14 +18,19 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
     {
         for(unsigned int i=0; i<curseur->getPremisse().size(); i++)
         {
-            liste_buts.push_back(curseur->getPremisse()[i]);
+            //On vérifie auparavent que l'élément n'est pas déjà dans la liste à afficher pour éviter les doublons
+            if(!isButPresent(curseur->getPremisse()[i]))
+                liste_buts.push_back(curseur->getPremisse()[i]);
         }
         for(unsigned int j=0; j<curseur->getConclusion().size(); j++)
         {
-            liste_buts.push_back(curseur->getPremisse()[j]);
+            if(!isButPresent(curseur->getConclusion()[j]))
+                liste_buts.push_back(curseur->getConclusion()[j]);
         }
         curseur = curseur->getSuivant();
     }
+    cout << "longueur de la liste" << liste_buts.size();
+
     //On remplit la liste déroulante
     for(unsigned int k=0; k<liste_buts.size(); k++)
     {
@@ -33,6 +39,8 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
         listeButs->addItem(but);
         connect(listeButs,SIGNAL(activated(int)),this,SLOT(retenirButs(int)));
     }
+
+    //Ajout dans le layout
     listeButs->setFixedSize(500, 50);
     layout_global = new QVBoxLayout;
     layout_global->addWidget(label);
@@ -43,8 +51,21 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
 }
 
 
+/* Slot personnalisé qui va permettre d'enregistrer le but dans le vecteur */
 void FenetreChainageArriere::retenirButs(int but)
 {
     base->setBut(liste_buts[but]);
     this->close();
+}
+
+
+/* Méthode qui détermine si l'élément est déjà dans la liste des buts à afficher */
+bool FenetreChainageArriere::isButPresent(Element &e)
+{
+    for(unsigned int i=0; i<liste_buts.size(); i++)
+    {
+        if(e == liste_buts[i])
+            return true;
+    }
+    return false;
 }

@@ -26,6 +26,8 @@ class FenetreChainageArriere : public QDialog
 
     public:
         FenetreChainageArriere(BaseDeConnaissances *base);
+        //Méthode qui détermine si l'élément est déjà dans la liste des buts à afficher
+        bool isButPresent(Element &e);
 
     private:
         QLabel *label;

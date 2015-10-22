@@ -1,7 +1,7 @@
 #include "FenetreConfig.h"
 
 /* Constructeur */
-FenetreConfig::FenetreConfig(Config *configParam)
+FenetreConfig::FenetreConfig(Config *configParam) : QDialog()
 {
     //Titre de la fenêtre
     setWindowTitle("Parametres de configuration");

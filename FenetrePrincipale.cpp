@@ -253,7 +253,7 @@ void FenetrePrincipale::chainageAvant()
         message->setStyleSheet("color: green");
 
         //Fenêtre qui affiche les traces du chaînage
-        afficherTracesChainage(e);
+        afficherTracesChainage(e, "avant");
     }
 }
 
@@ -261,10 +261,6 @@ void FenetrePrincipale::chainageAvant()
 /* Slot personnalisé pour effectuer le chainage arrière */
 void FenetrePrincipale::chainageArriere()
 {
-    //On ouvre la fenêtre qui contient l'intégral des faits
-    fenetreChainageArriere = new FenetreChainageArriere(baseDeConnaissances);
-    fenetreChainageArriere->exec();
-
     //Cas où la base de règles n'est pas remplie, on affiche un message d'erreur
     if(baseDeConnaissances->getDebut()==NULL)
     {
@@ -279,17 +275,12 @@ void FenetrePrincipale::chainageArriere()
     }
     else
     {
+        //On ouvre la fenêtre qui va permettre à l'utilisateur de renseigner le but à atteindre
+        fenetreChainageArriere = new FenetreChainageArriere(baseDeConnaissances);
+        fenetreChainageArriere->exec();
+
         //Création du moteur
         Moteur moteur;
-
-        vector<Element> el;
-        Element element;
-        element.setAttribut("Temps");
-        element.setOperateur("=");
-        element.setValeur("pluie");
-        el.push_back(element);
-
-        cout << "aaaa"+baseDeConnaissances->getBut()[0].toString();
 
         //On effectue le chaînage arrière en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
         vector<Element> e = moteur.chainageArriere(baseDeConnaissances, baseDeConnaissances->getBut());
@@ -305,7 +296,7 @@ void FenetrePrincipale::chainageArriere()
         message->setStyleSheet("color: green");
 
         //Fenêtre qui affiche les traces du chaînage
-        afficherTracesChainage(e);
+        afficherTracesChainage(e, "arriere");
     }
 }
 
@@ -331,7 +322,7 @@ void FenetrePrincipale::chainageMixte()
         Moteur moteur;
 
         //On effectue le chaînage mixte en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        moteur.chainageMixte(baseDeConnaissances);
+        vector<Element> e = moteur.chainageMixte(baseDeConnaissances);
 
         //Mise à jour de la base de faits
         refreshBF();
@@ -344,7 +335,7 @@ void FenetrePrincipale::chainageMixte()
         message->setStyleSheet("color: green");
 
         //Fenêtre qui affiche les traces du chaînage
-        //afficherTracesChainage(e);
+        afficherTracesChainage(e, "mixte");
     }
 }
 
@@ -425,10 +416,10 @@ void FenetrePrincipale::refreshBF()
 
 /* Méthode qui permet d'afficher la fenêtre avec les traces du chaînage
 On lui passe en paramètres un vecteur contenant les éléments ajoutés à la base de faits */
-void FenetrePrincipale::afficherTracesChainage(vector<Element> &e)
+void FenetrePrincipale::afficherTracesChainage(vector<Element> const &e, const string &chainage)
 {
     //On ouvre la fenêtre qui contient l'intégral des faits
-    fenetreTraces = new FenetreTracesAbreges(baseDeConnaissances, e);
+    fenetreTraces = new FenetreTracesAbreges(baseDeConnaissances, e, chainage);
     fenetreTraces->exec();
 }
 

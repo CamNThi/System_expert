@@ -24,7 +24,7 @@ class FenetreTracesAbreges : public QDialog
     void quitter();
 
     public:
-        FenetreTracesAbreges(BaseDeConnaissances *b, std::vector<Element> &e);
+        FenetreTracesAbreges(BaseDeConnaissances *b, std::vector<Element> const &e, std::string const &chainage);
 
     private:
         QLabel *labelRegles;
@@ -35,6 +35,7 @@ class FenetreTracesAbreges : public QDialog
         QVBoxLayout *layout_global;
         BaseDeConnaissances *base;
         std::vector<Element> elements;
+        std::string typeChainage;
 };
 
 #endif

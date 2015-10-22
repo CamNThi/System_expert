@@ -17,7 +17,7 @@ vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &t
     vector<Element> faitsAjoutes;
 
     //On réinitialise le tableau des règles appliquées
-    base->viderReglesAppliquees();
+    base->viderReglesAppliquees("avant");
 
     //On recherche une règle applicable
     vector <Regle*> r = chercherRegleApplicableChainageAvant(base, typeChainage);
@@ -32,7 +32,7 @@ vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &t
                 faitsAjoutes.push_back(r[i]->getConclusion()[j]);
             }
             ajouterConclusion(base, r[i]);
-            base->retenirRegle(r[i]);
+            base->retenirRegle(r[i], "avant");
             supprimerRegle(base, r[i]);
         }
         r = chercherRegleApplicableChainageAvant(base, typeChainage);
@@ -42,17 +42,29 @@ vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &t
 
 
 /* Méthode qui réalise un chaînage mixte sur la base de connaissance */
-void Moteur::chainageMixte(BaseDeConnaissances *base)
+vector<Element> Moteur::chainageMixte(BaseDeConnaissances *base)
 {
-    vector<Element> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant
+    vector<Element> elementsAjoutes; //Vecteur qui va contenir les éléments ajoutés à la base de faits en tout
+    vector<Element> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant, puis pendant le chaînage arrière
+
     do
     {
         //On effectue le chaînage avant
         e = chainageAvant(base, "largeur");
+        //On renseigne les faits ajoutés
+        for(int i=0; i<e.size(); i++)
+        {
+            elementsAjoutes.push_back(e[i]);
+        }
         //On effectue un chaînage arrière sur la base de faits obtenue
-        //chainageArriere(base);
+        e = chainageArriere(base, e);
+        //On renseigne les faits ajoutés
+        for(int i=0; i<e.size(); i++)
+        {
+            elementsAjoutes.push_back(e[i]);
+        }
     }while(e.size() != 0); //Exécution de la boucle jusqu'à ce qu'on ne trouve plus de faits déductibles
-
+    return elementsAjoutes;
 }
 
 
@@ -158,12 +170,12 @@ vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Elemen
     vector<Element> faitsAjoutes;
 
     //On réinitialise le tableau des règles appliquées
-    base->viderReglesAppliquees();
+    base->viderReglesAppliquees("arriere");
 
     //Tant qu'il y a des conclusions, on exécute le chaînage arrière
     for(unsigned i=0; i < conclusions.size(); i++){
         //Initialisation du chaînage arrière
-        initChainageArriere(base, &conclusions[i], faitsAjoutes);
+        initChainageArriere(base, conclusions[i], faitsAjoutes);
     }
 
     return faitsAjoutes;
@@ -171,9 +183,8 @@ vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Elemen
 
 
 /* Effectue le chaînage arrière pour un but donné */
-void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector<Element> &faitsAjoutes)
+void Moteur::initChainageArriere(BaseDeConnaissances *base, Element &but, vector<Element> &faitsAjoutes)
 {
-    cout << but->toString();
     //Initialisation de la base de faits
     vector<Element> BF = base->getBaseDeFaits();
 
@@ -184,30 +195,39 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
     while(cursor!=NULL)
     {
         //Le but est present dans la conclusion de la règle et la règle n'est pas présente dans les règles satisfaisantes
-        if(elementPresent(cursor->getConclusion(), but) && !reglePresente(base->getReglesAppliquees(), cursor)){
+        if(elementPresent(cursor->getConclusion(), but) && !reglePresente(base->getReglesAppliqueesArriere(), cursor)){
             //On parcourt chaque premisse de la règle
             for(unsigned i=0; i < cursor->getPremisse().size(); i++){
                 //Variable qui compte le nombre de correspondances
                 unsigned int correspondance = 0;
                 //Cas où les prémisses ne sont pas présentes dans la base de faits
-                if(!elementPresent(BF,&cursor->getPremisse()[i]))
+                if(!elementPresent(BF,cursor->getPremisse()[i]))
                 {
-                   initChainageArriere(base,&cursor->getPremisse()[i], faitsAjoutes);
+                   initChainageArriere(base, cursor->getPremisse()[i], faitsAjoutes);
                  }
                 else
                 {
                     ++correspondance;
-                 }
-                //Cas où toutes les prémisses sont toutes dans la base de faits
-                if (correspondance == cursor->getPremisse().size())
-                {
-                    base->retenirRegle(cursor);
-                    if(!elementPresent(BF, but))
+
+                    //Cas où toutes les prémisses sont toutes dans la base de faits
+                    if (correspondance == cursor->getPremisse().size())
                     {
-                        //On retient la règle
-                        faitsAjoutes.push_back(*but);
-                        base->getBaseDeFaits().push_back(*but);
+                        base->retenirRegle(cursor, "arriere");
+                        if(!elementPresent(BF, but))
+                        {
+                            //On retient la règle
+                            faitsAjoutes.push_back(but);
+                            base->getBaseDeFaits().push_back(but);
+                        }
                     }
+                    //Cas où la règle est partiellement satisfaisante
+                    else
+                    {
+                        //Question à l'utilisateur
+                        FenetreQuestionUtilisateur fenetreQuestionUser;
+                        fenetreQuestionUser.exec();
+                    }
+
                 }
             }
         }
@@ -217,10 +237,11 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
 
 
 /* Vérifie l'existence d'un élément de conclusion dans un vecteur d'élément */
-bool Moteur::elementPresent(std::vector<Element> &conclusion, const Element *e){
+bool Moteur::elementPresent(std::vector<Element> &conclusion, const Element &e)
+{
     //On regarde si l'élément est dans le vecteur de conclusions
     for (unsigned i=0; i <conclusion.size(); i++){
-        if (*e == conclusion[i]){
+        if (e == conclusion[i]){
             return true;
         }
     }
@@ -229,8 +250,8 @@ bool Moteur::elementPresent(std::vector<Element> &conclusion, const Element *e){
 
 
 /* Méthode qui vérifie l'existence de la règle dans un vecteur de règles */
-bool Moteur::reglePresente(std::vector<Regle *> vecteur_regles, Regle *ptr_regle){
-    //cout<< "Inside reglement Present\n";
+bool Moteur::reglePresente(vector<Regle *> &vecteur_regles, Regle *ptr_regle)
+{
     for (unsigned i=0; i <vecteur_regles.size(); i++){
         if (ptr_regle == vecteur_regles[i]){
             return true;

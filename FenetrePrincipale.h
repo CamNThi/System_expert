@@ -15,7 +15,7 @@
 #include "FenetreAfficheBase.h"
 #include "FenetreConfig.h"
 #include "FenetreTracesAbreges.h"
-#include "fenetreChainageArriere.h"
+#include "FenetreChainageArriere.h"
 
 
 /* Interface principale */
@@ -40,7 +40,7 @@ class FenetrePrincipale : public QWidget
         //Méthode qui met à jour l'affichage de la base de faits
         void refreshBF();
         //Méthode qui affiche la fenêtre avec les traces du chaînage
-        void afficherTracesChainage(std::vector<Element> &e);
+        void afficherTracesChainage(std::vector<Element> const &e, std::string const &chainage);
 
     private:
         //Les 4 boutons du menu

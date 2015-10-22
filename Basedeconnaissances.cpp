@@ -42,7 +42,7 @@ vector<Element> BaseDeConnaissances::getElements(string const &ligneTexte)
 
         recherche = -1; //-1 veut dire qu'on a rien trouvé
         //On parcourt le tableau pour rechercher tous les opérateurs
-        for(int i = 0; i<6; i++)
+        for(unsigned int i = 0; i<6; i++)
         {
             //Si on a trouvé un opérateur à une position dont l'indice est inférieur à la position actuelle trouvée...
             if((recherche > ligne.find(operateurs[i]) || recherche == -1) && (ligne.find(operateurs[i]) != -1))
@@ -183,18 +183,29 @@ bool BaseDeConnaissances::remplirBF(string const &nomFichier)
 }
 
 
-/* Méthode qui va se charger de vider le vecteur contenant les règles appliquées */
-void BaseDeConnaissances::viderReglesAppliquees()
+/* Méthode qui va se charger de vider le vecteur contenant les règles appliquées par le chaînage avant ou arrière */
+void BaseDeConnaissances::viderReglesAppliquees(string const &chainage)
 {
-    //On supprime les éléments du vecteur
-    reglesAppliquees.clear();
+    //On supprime les éléments du vecteur du chaînage avant
+    if(chainage == "avant")
+    {
+        reglesAppliqueesAvant.clear();
+    }
+    else if(chainage == "arriere")
+    {
+        reglesAppliqueesArriere.clear();
+    }
 }
 
 
-//Méthode qui se charge de retenir la règle passée en paramètre
-void BaseDeConnaissances::retenirRegle(Regle *r)
+
+//Méthode qui se charge de retenir la règle passée en paramètre, c'est à dire de l'enregistrer dans un vecteur pour le chaînage avant ou le chaînage arrière
+void BaseDeConnaissances::retenirRegle(Regle *r, string const &chainage)
 {
-    reglesAppliquees.push_back(r);
+    if(chainage == "avant")
+        reglesAppliqueesAvant.push_back(r);
+    else if(chainage == "arriere")
+        reglesAppliqueesArriere.push_back(r);
 }
 
 
@@ -255,21 +266,50 @@ string BaseDeConnaissances::afficheBR()
 }
 
 
-/* Méthode qui affiche les règles appliquées */
-string BaseDeConnaissances::afficheReglesAppliquees()
+/* Méthode qui affiche les règles appliquées pour le chaînage avant ou le chaînage arrière */
+string BaseDeConnaissances::afficheReglesAppliquees(string const &chainage)
 {
+    string vecteur;
     string retour = "";
-    //Cas où il n'y a pas de règles appliquées
-    if(reglesAppliquees.size()==0)
-        return "Aucune regle n'a ete appliquee.";
-    else
+
+    if(chainage == "avant")
     {
-        for(unsigned int i=0; i<reglesAppliquees.size(); i++)
+        //Cas où il n'y a pas de règles appliquées
+        if(reglesAppliqueesAvant.size()==0)
+            return "Aucune regle n'a ete appliquee.";
+        else
         {
-            retour += reglesAppliquees[i]->toString();
-            retour += "\n";
+            for(unsigned int i=0; i<reglesAppliqueesAvant.size(); i++)
+            {
+                if(chainage == "avant")
+                    retour += reglesAppliqueesAvant[i]->toString();
+                else if(chainage == "arriere")
+                    retour += reglesAppliqueesAvant[i]->toString();
+                retour += "\n";
+            }
         }
     }
+    else if(chainage == "arriere")
+    {
+        //Cas où il n'y a pas de règles appliquées
+        if(reglesAppliqueesArriere.size()==0)
+            return "Aucune regle n'a ete appliquee.";
+        else
+        {
+            for(unsigned int i=0; i<reglesAppliqueesArriere.size(); i++)
+            {
+                if(chainage == "avant")
+                    retour += reglesAppliqueesArriere[i]->toString();
+                else if(chainage == "arriere")
+                    retour += reglesAppliqueesArriere[i]->toString();
+                retour += "\n";
+            }
+        }
+    }
+
+
+
+
     return retour;
 }
 
@@ -286,9 +326,14 @@ vector<Element> &BaseDeConnaissances::getBaseDeFaits()
     return baseDeFaits;
 }
 
-vector<Regle*> &BaseDeConnaissances::getReglesAppliquees()
+vector<Regle*> &BaseDeConnaissances::getReglesAppliqueesAvant()
 {
-    return reglesAppliquees;
+    return reglesAppliqueesAvant;
+}
+
+vector<Regle*> &BaseDeConnaissances::getReglesAppliqueesArriere()
+{
+    return reglesAppliqueesArriere;
 }
 
 vector<Element> &BaseDeConnaissances::getBut()
@@ -303,7 +348,7 @@ void BaseDeConnaissances::setDebut(Regle *r)
     debut = r;
 }
 
-void BaseDeConnaissances::setBut(Element &e)
+void BaseDeConnaissances::setBut(Element const &e)
 {
 
         buts.push_back(e);
