@@ -1,0 +1,15 @@
+VitesseNuage=rapide->VitesseVent=fort
+VitesseNuage=lent->VitesseVent=faible
+Nuage=altastratus->Temps=couvert
+Nuage=nimbostratus->Temps=couvert
+Pression<1015->Temps=pluie
+Fourmis=enlignesETDirectionVent=NETNuage=cumulo-nimbus->Temps=pluie
+Fourmis=eparpilleesETDirectionVent=SETNuage=cumulus->Temps=soleil
+Nuage=cumulo-nimbus->Temps=couvert
+VitesseVent=fortETTemps=couvert->Temperature=froide
+Temperature=froideETNuage=nimbostratusETVitesseVent=fort->Temps=grele
+Nuage=cumulusETPression>1015->Temps=soleil
+Temps=couvertETVitesseVent=faible->Temps=pluie
+Nuage=cumulo-nimbusETVitesseVent=fort->Temps=orage
+Temperature=chaudeETNuage=nimbostratus->Temps=pluie
+Temperature=chaude->DirectionVent=S
