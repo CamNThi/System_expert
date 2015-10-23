@@ -2,7 +2,9 @@
 
 using namespace std;
 
-/* On passe en paramètres du constructeur un vecteur contenant les éléments ajoutés à la base de faits */
+/* On passe en paramètres du constructeur la base de connaissance
+ainsi qu'un vecteur contenant les éléments ajoutés à la base de faits lors du chaînage
+ et on indique le type de chaînage (avant, arriere ou mixte) */
 FenetreTracesAbreges::FenetreTracesAbreges(BaseDeConnaissances *b, vector<Element> const &e, string const &chainage) : QDialog()
 {
     //Titre de la fenêtre
@@ -54,6 +56,7 @@ FenetreTracesAbreges::FenetreTracesAbreges(BaseDeConnaissances *b, vector<Elemen
     QObject::connect(bouton_traces, SIGNAL(clicked()), this, SLOT(afficherTracesCompletes()));
     QObject::connect(bouton_annuler, SIGNAL(clicked()), this, SLOT(quitter()));
 
+    //On retient la base de connaissances, les éléments ajoutés et le type de chaînage
     base = b;
     elements = e;
     typeChainage = chainage;

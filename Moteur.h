@@ -1,12 +1,10 @@
 #ifndef MOTEUR_H
 #define MOTEUR_H
 
-#include "Basedeconnaissances.h"
-
-#include "Regle.h"
-#include "FenetreQuestionUtilisateur.h"
-
 #include <string>
+#include <vector>
+
+#include "Basedeconnaissances.h"
 
 
 /* Moteur d'inférence qui va effectuer les chaînages */
@@ -35,10 +33,6 @@ class Moteur
         void ajouterPremisse(BaseDeConnaissances *base, Regle *regle);
         //Méthode qui va supprimer une règle de la base de règles
         void supprimerRegle(BaseDeConnaissances *base, Regle *r);
-
-    private:
-        std::vector<Regle*> regles_satisfaites;
-
 };
 
 #endif

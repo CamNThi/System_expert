@@ -1,7 +1,8 @@
 #include "FenetreConfig.h"
 
-/* Constructeur */
-FenetreConfig::FenetreConfig(Config *configParam) : QDialog()
+/* Constructeur
+On lui passe en paramètre la configuration actuelle pour que la classe puisse la modifier */
+FenetreConfig::FenetreConfig(Config *configuration) : QDialog()
 {
     //Titre de la fenêtre
     setWindowTitle("Parametres de configuration");
@@ -15,7 +16,7 @@ FenetreConfig::FenetreConfig(Config *configParam) : QDialog()
     label_param1->setText("Type de chainage avant: ");
     option1_param1 = new QRadioButton("En profondeur");
     option2_param1 = new QRadioButton("En largeur");
-    if(configParam->getTypeChainageAvant() == "profondeur")
+    if(configuration->getTypeChainageAvant() == "profondeur")
         option1_param1->setChecked(true);
     else
         option2_param1->setChecked(true);
@@ -38,7 +39,7 @@ FenetreConfig::FenetreConfig(Config *configParam) : QDialog()
     setLayout(layout_global);
 
     //On renseigne la configuration actuelle
-    config = configParam;
+    config = configuration;
 
     //Connexion des boutons
     QObject::connect(bouton_valider, SIGNAL(clicked()), this, SLOT(configurerAppli()));

@@ -3,7 +3,9 @@
 using namespace std;
 
 
-/* Widget qui servira de fenêtre secondaire pour afficher les règles */
+/* Widget qui servira de fenêtre secondaire pour afficher les contenus de la base de règles/base de faits
+ On lui passe en paramètre la base de connaissance qui contient les règles et les faits
+On lui passe également une chaîne de caractère indiquant la base qu'on veut afficher (base de règles ou base de faits) */
 FenetreAfficheBase::FenetreAfficheBase(BaseDeConnaissances *baseDeConnaissances, string const &base) : QDialog()
 {
     //On renseigne le titre de la fenêtre en fonction de la base à afficher

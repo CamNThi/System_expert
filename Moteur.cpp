@@ -223,9 +223,7 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element &but, vector
                     //Cas où la règle est partiellement satisfaisante
                     else
                     {
-                        //Question à l'utilisateur
-                        FenetreQuestionUtilisateur fenetreQuestionUser;
-                        fenetreQuestionUser.exec();
+                        //On appelle une méthode de la fenêtre principale pour afficher la fenêtre de question à l'utilisateur
                     }
 
                 }

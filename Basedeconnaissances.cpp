@@ -350,7 +350,5 @@ void BaseDeConnaissances::setDebut(Regle *r)
 
 void BaseDeConnaissances::setBut(Element const &e)
 {
-
-        buts.push_back(e);
-
+    buts.push_back(e);
 }

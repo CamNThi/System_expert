@@ -1,8 +1,9 @@
 #ifndef REGLE_H
 #define REGLE_H
 
-#include "Element.h"
 #include <vector>
+
+#include "Element.h"
 
 
 /* Classe qui décrit une règle (composée d'une prémisse et d'une conclusion)
@@ -38,6 +39,7 @@ class Regle
         Regle *m_suivant;
 };
 
+//On redéfinit l'opérateur de comparaison pour pouvoir comparer deux règled
 bool operator==(Regle &element1, Regle &element2);
 
 #endif

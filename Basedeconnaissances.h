@@ -4,7 +4,7 @@
 #include <vector> //Pour pouvoir utiliser les vecteurs
 #include <fstream> //Pour pouvoir lire un fichier txt
 #include <string>
-#include "Element.h"
+
 #include "Regle.h"
 
 

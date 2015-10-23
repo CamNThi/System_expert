@@ -1,5 +1,5 @@
-#ifndef FENETREBASEDEREGLES_H
-#define FENETREBASEDEREGLES_H
+#ifndef FENETREAFFICHEBASE_H
+#define FENETREAFFICHEBASE_H
 
 #include <QDialog>
 #include <QVBoxLayout>

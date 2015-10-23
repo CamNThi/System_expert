@@ -2,7 +2,7 @@
 
 using namespace std;
 
-/* On passe en paramètres du constructeur */
+/* On passe en paramètres du constructeur l'élément sur lequel on questionne l'utilisateur */
 FenetreQuestionUtilisateur::FenetreQuestionUtilisateur() : QDialog()
 {
     //Titre de la fenêtre

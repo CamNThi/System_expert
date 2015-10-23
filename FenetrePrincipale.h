@@ -7,21 +7,20 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
-#include <QFrame>
 #include <QTextEdit>
 
-#include "Basedeconnaissances.h"
-#include "Moteur.h"
-#include "FenetreAfficheBase.h"
 #include "FenetreConfig.h"
-#include "FenetreTracesAbreges.h"
 #include "FenetreChainageArriere.h"
+#include "FenetreAfficheBase.h"
+#include "FenetreTracesAbreges.h"
+#include "FenetreQuestionUtilisateur.h"
+#include "Moteur.h"
 
 
-/* Interface principale */
+/* Interface principale, point de départ de l'application */
 class FenetrePrincipale : public QWidget
 {
-    //Macro pour créer le slot personnalisé
+    //Macro pour créer les slots personnalisés
     Q_OBJECT
 
     public slots:
@@ -37,18 +36,20 @@ class FenetrePrincipale : public QWidget
 
     public:
         FenetrePrincipale();
-        //Méthode qui met à jour l'affichage de la base de faits
+        //Méthode qui met à jour graphiquement l'affichage de la base de faits
         void refreshBF();
-        //Méthode qui affiche la fenêtre avec les traces du chaînage
+        //Méthode qui lance l'affichage de la fenêtre des traces du chaînage réalisé
         void afficherTracesChainage(std::vector<Element> const &e, std::string const &chainage);
+        //Accesseur
+        Config *getConfig();
 
     private:
-        //Les 4 boutons du menu
+        //Les 4 boutons du bas du menu
         QPushButton *bouton0;
         QPushButton *bouton1;
         QPushButton *bouton2;
         QPushButton *bouton3;
-        //Le layout en bas qui va contenir les boutons
+        //Le layout en bas qui va contenir les boutons du bas
         QHBoxLayout *layout_boutons_bas;
         //Le texte à afficher
         QLabel *texte;
@@ -77,8 +78,13 @@ class FenetrePrincipale : public QWidget
         QHBoxLayout *layout_boutons_haut;
         //Le layout global qui va contenir tous les éléments
         QVBoxLayout *layout_global;
+
         //La base de connaissance
         BaseDeConnaissances *baseDeConnaissances;
+        //Le moteur
+        Moteur *moteur;
+        //Contient la configuration de l'application
+        Config *config;
         //La fenêtre qui s'affiche pour renseigner des règles qui remplissent la base de règles
         FenetreAfficheBase *fenetreBase;
         //La fenêtre de configuration de l'application
@@ -87,9 +93,6 @@ class FenetrePrincipale : public QWidget
         FenetreTracesAbreges *fenetreTraces;
         //Fenêtre pour initialiser les buts pour le chaînage arrière
         FenetreChainageArriere *fenetreChainageArriere;
-        //Contient la configuration de l'application
-        Config *config;
-
 };
 
 #endif

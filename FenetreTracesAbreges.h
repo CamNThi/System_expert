@@ -10,10 +10,9 @@
 #include <QTextEdit>
 
 #include "Basedeconnaissances.h"
-#include "Element.h"
 
 
-/* Fenêtre qui va permettre d'afficher les traces du chaînage */
+/* Fenêtre qui va permettre d'afficher les traces du chaînage (avant, arriere ou mixte) */
 class FenetreTracesAbreges : public QDialog
 {
     //Macro pour créer le slot personnalisé
@@ -33,8 +32,11 @@ class FenetreTracesAbreges : public QDialog
         QPushButton *bouton_traces;
         QPushButton *bouton_annuler;
         QVBoxLayout *layout_global;
+        //Pour retenir la base de connaissances
         BaseDeConnaissances *base;
+        //Pour retenir les éléments ajoutés à la base de faits lors du dernier chaînage
         std::vector<Element> elements;
+        //Pour retenir le type de chaînage (avant, arriere ou mixte)
         std::string typeChainage;
 };
 

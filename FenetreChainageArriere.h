@@ -22,7 +22,7 @@ class FenetreChainageArriere : public QDialog
     Q_OBJECT
 
     public slots:
-    void retenirButs(int but);
+        void retenirButs(int but);
 
     public:
         FenetreChainageArriere(BaseDeConnaissances *base);
@@ -33,7 +33,9 @@ class FenetreChainageArriere : public QDialog
         QLabel *label;
         QComboBox *listeButs;
         QVBoxLayout *layout_global;
+        //Pour contenir les éléments qui seront dans la liste déroulante
         std::vector<Element> liste_buts;
+        //Pour retenir la base de connaissances
         BaseDeConnaissances *base;
 };
 

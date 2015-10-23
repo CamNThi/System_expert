@@ -30,7 +30,7 @@ class Element
         std::string m_valeur;
 };
 
-//On redéfinit l'opérateur de comparaison
+//On redéfinit l'opérateur de comparaison pour pouvoir comparer deux éléments
 bool operator==(Element const &element1, Element const &element2);
 
 #endif

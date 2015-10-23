@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <QLabel>
 
+#include "Element.h"
+
 
 /* Fenêtre qui va permettre de poser une question à l'utilisateur concernant la validité d'un fait */
 class FenetreQuestionUtilisateur : public QDialog

@@ -8,14 +8,13 @@
 #include <QRadioButton>
 #include <QLabel>
 
-#include "FenetreConfig.h"
 #include "Config.h"
 
 
 /* Fenêtre qui va permettre de configurer l'application */
 class FenetreConfig : public QDialog
 {
-    //Macro pour créer le slot personnalisé
+    //Macro pour créer les slots personnalisés
     Q_OBJECT
 
     public slots:
@@ -23,7 +22,7 @@ class FenetreConfig : public QDialog
     void quitter();
 
     public:
-        FenetreConfig(Config *configParam);
+        FenetreConfig(Config *configuration);
 
     private:
         QLabel *label_param1;
@@ -34,6 +33,7 @@ class FenetreConfig : public QDialog
         QPushButton *bouton_annuler;
         QHBoxLayout *layout_boutons;
         QVBoxLayout *layout_global;
+        //Pour enregistrer les configurations de l'application
         Config *config;
 };
 

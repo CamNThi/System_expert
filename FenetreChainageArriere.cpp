@@ -3,11 +3,12 @@
 using namespace std;
 
 
-/* Widget qui servira de fenêtre secondaire pour permettre à l'utilisateur d'initialiser les buts */
+/* Widget qui servira de fenêtre secondaire pour permettre à l'utilisateur d'initialiser les buts
+On passe en paramètre la base de connaissances */
 FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog()
 {
     //Création des labels
-    label = new QLabel("Elements extraits de la base de regles. Selectionnez les buts a atteindre: ");
+    label = new QLabel("Elements extraits de la base de regles. Selectionnez le but a atteindre: ");
     //Création de la liste déroulante
     listeButs = new QComboBox;
 
@@ -29,7 +30,6 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
         }
         curseur = curseur->getSuivant();
     }
-    cout << "longueur de la liste" << liste_buts.size();
 
     //On remplit la liste déroulante
     for(unsigned int k=0; k<liste_buts.size(); k++)
@@ -47,6 +47,7 @@ FenetreChainageArriere::FenetreChainageArriere(BaseDeConnaissances *b) : QDialog
     layout_global->addWidget(listeButs);
     setLayout(layout_global);
 
+    //On retient la base de connaissances
     base = b;
 }
 

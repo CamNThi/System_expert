@@ -8,6 +8,8 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
 {
     //On créé la base de connaissances
     baseDeConnaissances = new BaseDeConnaissances;
+    //On créé le moteur
+    moteur = new Moteur;
     //On créé la configuration de l'application
     config = new Config;
 
@@ -32,7 +34,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     bouton6->setFixedSize(50, 30);
     bouton7->setFixedSize(50, 30);
 
-    //Création du layout pour les boutons du haut
+    //Création du layout et ajout des boutons du haut
     layout_boutons_haut = new QHBoxLayout;
     layout_boutons_haut->addWidget(bouton5);
     layout_boutons_haut->addWidget(bouton6);
@@ -46,7 +48,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     bouton2 = new QPushButton("Chainage Arriere");
     bouton3 = new QPushButton("Chainage Mixte");
 
-    //Création du layout pour y mettre les boutons
+    //Création du layout et ajout des boutons du bas
     layout_boutons_bas = new QHBoxLayout;
     //Ajout des boutons dans le layout
     layout_boutons_bas->addWidget(bouton0);
@@ -62,7 +64,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     label_BFMoteur->setFixedHeight(30);
     label_BFMoteur->setAlignment(Qt::AlignBottom);
 
-    //Construction du layout qui contient les labels
+    //Construction du layout et ajout des labels
     layoutBF_labels = new QHBoxLayout;
     layoutBF_labels->addWidget(label_BFInitial);
     layoutBF_labels->addWidget(label_BFMoteur);
@@ -71,27 +73,22 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     bouton4 = new QPushButton(QIcon("images/download.png"), "Initialiser base de faits", this);
     BFInitial = new QTextEdit;
     BFMoteur = new QTextEdit;
-    //Pour ne pas rendre le texte modifiable
+    //Pour ne pas rendre le texte modifiable dans les zones de texte
     BFInitial->setReadOnly(true);
     BFMoteur->setReadOnly(true);
-    //Pour aligner le texte en haut
-    //BFInitial->setAlignment(Qt::AlignTop);
-    //BFMoteur->setAlignment(Qt::AlignTop);
     //Pour encadrer le champ
     BFInitial->setStyleSheet("border: 1px solid grey");
     BFMoteur->setStyleSheet("border: 1px solid grey");
-    //On met à jour la base de faits
+    //On met à jour la base de faits graphiquement : remplissage des zones de texte
     refreshBF();
 
-    //Création du layout qui va contenir la zone de texte gauche ainsi que le bouton
+    //Création du layout et ajout de la zone de texte gauche et du bouton
     layoutBF_gauche = new QVBoxLayout;
-    //Ajout du layout des boutons et du widget
     layoutBF_gauche->addWidget(BFInitial);
     layoutBF_gauche->addWidget(bouton4);
 
-    //Création du layout qui contient les deux zones de texte
+    //Création du layout et ajout des deux zones de texte
     layoutBF_global = new QHBoxLayout;
-    //Ajout du layout et de la zone de texte droite
     layoutBF_global->addLayout(layoutBF_gauche);
     //Trait de séparation vertical
     QFrame * line = new QFrame;
@@ -105,6 +102,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     texte = new QLabel;
     //Pour aligner le texte en haut
     texte->setAlignment(Qt::AlignTop);
+    //Remplissage du texte
     texte->setText("############################ Systeme Expert ############################");
     texte->setText(texte->text()+"\n\n\nCette application permet d'effectuer une simulation de raisonnements deductifs.");
     texte->setText(texte->text()+"\n\nPour que le moteur puisse fonctionner, veuillez remplir la base de regles en cliquant sur \"Initialiser base de regles\", puis la base de faits avec le bouton \"Initialiser base de faits\".");
@@ -119,7 +117,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     message->setWordWrap(true);
     message->setAlignment(Qt::AlignCenter);
 
-    //Création du layout global
+    //Création du layout global et ajout des éléments
     layout_global = new QVBoxLayout;
     layout_global->addLayout(layout_boutons_haut);
     layout_global->addWidget(texte);
@@ -152,12 +150,12 @@ void FenetrePrincipale::remplirBF()
         //On vide la base de faits
         baseDeConnaissances->viderBF();
 
-        //On remet l'affichage vide pour la base de faits
+        //On met l'affichage à vide pour la base de faits
         BFInitial->setText("");
         BFMoteur->setText("");
     }
 
-    //On initialise la base de faits
+    //On initialise la base de faits à partir du fichier
     bool result = baseDeConnaissances->remplirBF("BF.txt");
 
     //Cas où on ne trouve pas le fichier correspondant
@@ -166,20 +164,20 @@ void FenetrePrincipale::remplirBF()
         QMessageBox::critical(this, "Erreur", "Erreur, le fichier BF.txt n'a pas ete trouve dans le repertoire \"donnees\"");
 
     }
-    //Sinon, on affiche un message de confirmation
+    //Cas où on a trouvé le fichier
     else
     {
-        //Message de confirmation
+        //Mis à jour du message de confirmation
         message->setText("Base de faits initialisee avec succes.");
         message->setStyleSheet("color: green");
 
         //On renomme le bouton
         bouton4->setText("Reinitialiser base de faits");
 
-        //On efface l'ancien affichage
+        //On efface l'ancien affichage de la base de faits
         BFInitial->setText("");
 
-        //Mise à jour de la base de faits sur l'affichage
+        //Mise à jour de l'affichage de la base de faits
         refreshBF();
 
         //On met à jour le label au-dessus de la zone de texte
@@ -201,17 +199,19 @@ void FenetrePrincipale::remplirBR()
     else
     //Cas où la base de règles est vide
     {
-        //On initialise la base de règles
+        //On initialise la base de règles à partir du fichier
         bool result = baseDeConnaissances->remplirBR("BR.txt");
 
+        //Cas où on a pas trouvé le fichier
         if(!result)
         {
             QMessageBox::critical(this, "Erreur", "Erreur, le fichier BR.txt n'a pas ete trouve dans le repertoire \"donnees\"");
 
         }
-        //Sinon, on affiche un message de confirmation
+        //Cas où on a trouvé le fichier
         else
         {
+            //Mise à jour du message de confirmation
             message->setText("Base de regles initialisee avec succes.");
             message->setStyleSheet("color: green");
         }
@@ -219,7 +219,7 @@ void FenetrePrincipale::remplirBR()
 }
 
 
-/* Slot personnalisé pour effectuer le chainage avant */
+/* Slot personnalisé pour lancer le chainage avant */
 void FenetrePrincipale::chainageAvant()
 {
     //Cas où la base de règles n'est pas remplie, on affiche un message d'erreur
@@ -228,7 +228,7 @@ void FenetrePrincipale::chainageAvant()
         message->setText("Erreur dans l'execution du chainage avant, la base de regles est vide.\nCliquez sur \"Initialiser base de regles\".");
         message->setStyleSheet("color: red");
     }
-    //Cas où la base de faits n'est pas remplie
+    //Cas où la base de faits n'est pas remplie, on affiche un message d'erreur
     else if(baseDeConnaissances->getBaseDeFaits().size()==0)
     {
         message->setText("Erreur dans l'execution du chainage avant, la base de faits est vide.\nCliquez sur \"Initialiser base de faits\".");
@@ -236,19 +236,17 @@ void FenetrePrincipale::chainageAvant()
     }
     else
     {
-        //Création du moteur
-        Moteur moteur;
-
         //On effectue le chaînage avant en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur.chainageAvant(baseDeConnaissances, config->getTypeChainageAvant());
+        vector<Element> e = moteur->chainageAvant(baseDeConnaissances, config->getTypeChainageAvant());
 
-        //Mise à jour de la base de faits
+        //Mise à jour de la base de faits graphiquement
         refreshBF();
 
         //On met à jour les labels au-dessus des zones de texte
         label_BFInitial->setText("Base de fait avant chainage avant:");
         label_BFMoteur->setText("Base de fait apres chainage avant:");
 
+        //Mise à jour du message de confirmation
         message->setText("Le chainage avant s'est deroule avec succes.");
         message->setStyleSheet("color: green");
 
@@ -279,11 +277,8 @@ void FenetrePrincipale::chainageArriere()
         fenetreChainageArriere = new FenetreChainageArriere(baseDeConnaissances);
         fenetreChainageArriere->exec();
 
-        //Création du moteur
-        Moteur moteur;
-
         //On effectue le chaînage arrière en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur.chainageArriere(baseDeConnaissances, baseDeConnaissances->getBut());
+        vector<Element> e = moteur->chainageArriere(baseDeConnaissances, baseDeConnaissances->getBut());
 
         //Mise à jour de la base de faits
         refreshBF();
@@ -292,6 +287,7 @@ void FenetrePrincipale::chainageArriere()
         label_BFInitial->setText("Base de fait avant chainage arriere:");
         label_BFMoteur->setText("Base de fait apres chainage arriere:");
 
+        //Mise à jour du message de confirmation
         message->setText("Le chainage arriere s'est deroule avec succes.");
         message->setStyleSheet("color: green");
 
@@ -318,11 +314,8 @@ void FenetrePrincipale::chainageMixte()
     }
     else
     {
-        //Création du moteur
-        Moteur moteur;
-
         //On effectue le chaînage mixte en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur.chainageMixte(baseDeConnaissances);
+        vector<Element> e = moteur->chainageMixte(baseDeConnaissances);
 
         //Mise à jour de la base de faits
         refreshBF();
@@ -331,6 +324,7 @@ void FenetrePrincipale::chainageMixte()
         label_BFInitial->setText("Base de fait avant chainage mixte:");
         label_BFMoteur->setText("Base de fait apres chainage mixte:");
 
+        //Mise à jour du message de confirmation
         message->setText("Le chainage mixte s'est deroule avec succes.");
         message->setStyleSheet("color: green");
 
@@ -384,7 +378,7 @@ void FenetrePrincipale::viderBase()
 }
 
 
-/* Méthode qui met à jour l'affichage de la base de faits */
+/* Méthode qui met à jour graphiquement l'affichage de la base de faits */
 void FenetrePrincipale::refreshBF()
 {
     //On récupère le contenu de la base de faits
@@ -414,12 +408,21 @@ void FenetrePrincipale::refreshBF()
 }
 
 
-/* Méthode qui permet d'afficher la fenêtre avec les traces du chaînage
-On lui passe en paramètres un vecteur contenant les éléments ajoutés à la base de faits */
+/* Méthode qui lance l'affichage de la fenêtre des traces du chaînage réalisé
+On lui passe en paramètres un vecteur contenant les éléments ajoutés à la base de faits lors du chaînage
+On lui passe égalemente le type de chaînage réalisé (avant, arriere, mixte) */
 void FenetrePrincipale::afficherTracesChainage(vector<Element> const &e, const string &chainage)
 {
     //On ouvre la fenêtre qui contient l'intégral des faits
     fenetreTraces = new FenetreTracesAbreges(baseDeConnaissances, e, chainage);
     fenetreTraces->exec();
 }
+
+
+/* Accesseur */
+Config *FenetrePrincipale::getConfig()
+{
+    return config;
+}
+
 
