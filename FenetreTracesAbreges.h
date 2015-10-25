@@ -23,7 +23,7 @@ class FenetreTracesAbreges : public QDialog
     void quitter();
 
     public:
-        FenetreTracesAbreges(BaseDeConnaissances *b, std::vector<Element> const &e, std::string const &chainage);
+        FenetreTracesAbreges(BaseDeConnaissances *b, std::vector<Element *> const &e, std::string const &chainage);
 
     private:
         QLabel *labelRegles;
@@ -35,7 +35,7 @@ class FenetreTracesAbreges : public QDialog
         //Pour retenir la base de connaissances
         BaseDeConnaissances *base;
         //Pour retenir les éléments ajoutés à la base de faits lors du dernier chaînage
-        std::vector<Element> elements;
+        std::vector<Element *> elements;
         //Pour retenir le type de chaînage (avant, arriere ou mixte)
         std::string typeChainage;
 };

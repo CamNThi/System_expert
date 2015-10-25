@@ -11,18 +11,21 @@ Moteur::Moteur()
 
 
 /* Méthode qui réalise un chaînage avant sur la base de connaissance passée en paramètre */
-vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &typeChainage)
+vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const &typeChainage)
 {
     //Vecteur qu'on va retourner, avec la liste des éléments ajoutés à la base de faits
-    vector<Element> faitsAjoutes;
+    vector<Element *> faitsAjoutes;
 
     //On réinitialise le tableau des règles appliquées
     base->viderReglesAppliquees("avant");
 
+    //Pour indiquer si on a atteint le but
+    bool butAtteint = false;
+
     //On recherche une règle applicable
-    vector <Regle*> r = chercherRegleApplicableChainageAvant(base, typeChainage);
+    vector <Regle *> r = chercherRegleApplicableChainageAvant(base, typeChainage);
     //Tant qu'on trouve une règle pour compléter la base de faits, on continue la recherche
-    while(r.size() != 0)
+    while(r.size() != 0 && butAtteint==false)
     {
         for(unsigned int i=0; i<r.size(); i++)
         {
@@ -30,6 +33,10 @@ vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &t
             for(unsigned int j=0; j<r[i]->getConclusion().size(); j++)
             {
                 faitsAjoutes.push_back(r[i]->getConclusion()[j]);
+                if(base->getBut()!=NULL && *r[i]->getConclusion()[j] == *base->getBut())
+                {
+                    butAtteint = true;
+                }
             }
             ajouterConclusion(base, r[i]);
             base->retenirRegle(r[i], "avant");
@@ -42,24 +49,24 @@ vector<Element> Moteur::chainageAvant(BaseDeConnaissances *base, string const &t
 
 
 /* Méthode qui réalise un chaînage mixte sur la base de connaissance */
-vector<Element> Moteur::chainageMixte(BaseDeConnaissances *base)
+vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base)
 {
-    vector<Element> elementsAjoutes; //Vecteur qui va contenir les éléments ajoutés à la base de faits en tout
-    vector<Element> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant, puis pendant le chaînage arrière
+    vector<Element *> elementsAjoutes; //Vecteur qui va contenir les éléments ajoutés à la base de faits en tout
+    vector<Element *> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant, puis pendant le chaînage arrière
 
     do
     {
         //On effectue le chaînage avant
         e = chainageAvant(base, "largeur");
         //On renseigne les faits ajoutés
-        for(int i=0; i<e.size(); i++)
+        for(unsigned int i=0; i<e.size(); i++)
         {
             elementsAjoutes.push_back(e[i]);
         }
         //On effectue un chaînage arrière sur la base de faits obtenue
         e = chainageArriere(base, e);
         //On renseigne les faits ajoutés
-        for(int i=0; i<e.size(); i++)
+        for(unsigned int i=0; i<e.size(); i++)
         {
             elementsAjoutes.push_back(e[i]);
         }
@@ -71,14 +78,14 @@ vector<Element> Moteur::chainageMixte(BaseDeConnaissances *base)
 /* Méthode qui va renvoyer les règles applicables pour la base de connaissance
 Si le dernier paramètre indique un chainage avant en profondeur, une seule règle est déclenchée chaque niveau de déduction
 Sinon, s'il s'agit d'un chainage avant en largeur, on va enrichir la base de fait de tous les faits qu'on peut déduire à chaque niveau de déduction */
-vector<Regle*> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances *base, string const &typeChainage)
+vector<Regle *> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances *base, string const &typeChainage)
 {
     //Curseur pour parcourir la liste (on le met au début de la liste)
     Regle *curseur = base->getDebut();
     //Variable qui compte le nombre de correspondances
     unsigned int correspondance = 0;
     //Contient les règles applicables
-    vector<Regle*> regles;
+    vector<Regle *> regles;
 
     //Tant qu'on est pas à la fin de la liste, on continue
     while(curseur!=NULL)
@@ -87,13 +94,13 @@ vector<Regle*> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances 
         {
             for(unsigned int j=0; j<base->getBaseDeFaits().size(); j++)
             {
-                if(base->getBaseDeFaits()[j] == curseur->getPremisse()[i])
+                if(*base->getBaseDeFaits()[j] == *curseur->getPremisse()[i])
                     correspondance++;
             }
         }
 
         //Si on a suffisemment de correspondances, la règle est applicable
-        if(correspondance==curseur->getPremisse().size())
+        if(correspondance == curseur->getPremisse().size())
         {
             regles.push_back(curseur);
             if(typeChainage == "profondeur")
@@ -164,10 +171,10 @@ void Moteur::supprimerRegle(BaseDeConnaissances *base, Regle *r)
 
 
 /* Méthode qui réalise un chaînage arrière sur la base de connaissance passée en paramètre, et à partir d'un ou plusieurs buts, passés en paramètres */
-vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Element> &conclusions)
+vector<Element *> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Element *> &conclusions)
 {
     //Vecteur qu'on va retourner, avec la liste des éléments ajoutés à la base de faits
-    vector<Element> faitsAjoutes;
+    vector<Element *> faitsAjoutes;
 
     //On réinitialise le tableau des règles appliquées
     base->viderReglesAppliquees("arriere");
@@ -183,10 +190,10 @@ vector<Element> Moteur::chainageArriere(BaseDeConnaissances *base, vector<Elemen
 
 
 /* Effectue le chaînage arrière pour un but donné */
-void Moteur::initChainageArriere(BaseDeConnaissances *base, Element &but, vector<Element> &faitsAjoutes)
+void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector<Element *> &faitsAjoutes)
 {
     //Initialisation de la base de faits
-    vector<Element> BF = base->getBaseDeFaits();
+    vector<Element *> BF = base->getBaseDeFaits();
 
     //Initialisation de l'iterateur de la base de règles
     Regle *cursor = base->getDebut();
@@ -235,11 +242,11 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element &but, vector
 
 
 /* Vérifie l'existence d'un élément de conclusion dans un vecteur d'élément */
-bool Moteur::elementPresent(std::vector<Element> &conclusion, const Element &e)
+bool Moteur::elementPresent(vector<Element *> &conclusion, const Element *e)
 {
     //On regarde si l'élément est dans le vecteur de conclusions
     for (unsigned i=0; i <conclusion.size(); i++){
-        if (e == conclusion[i]){
+        if (*e == *conclusion[i]){
             return true;
         }
     }
@@ -251,7 +258,7 @@ bool Moteur::elementPresent(std::vector<Element> &conclusion, const Element &e)
 bool Moteur::reglePresente(vector<Regle *> &vecteur_regles, Regle *ptr_regle)
 {
     for (unsigned i=0; i <vecteur_regles.size(); i++){
-        if (ptr_regle == vecteur_regles[i]){
+        if (*ptr_regle == *vecteur_regles[i]){
             return true;
         }
 

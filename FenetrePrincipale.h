@@ -10,7 +10,7 @@
 #include <QTextEdit>
 
 #include "FenetreConfig.h"
-#include "FenetreChainageArriere.h"
+#include "FenetreButChainage.h"
 #include "FenetreAfficheBase.h"
 #include "FenetreTracesAbreges.h"
 #include "FenetreQuestionUtilisateur.h"
@@ -39,9 +39,9 @@ class FenetrePrincipale : public QWidget
         //Méthode qui met à jour graphiquement l'affichage de la base de faits
         void refreshBF();
         //Méthode qui lance l'affichage de la fenêtre des traces du chaînage réalisé
-        void afficherTracesChainage(std::vector<Element> const &e, std::string const &chainage);
+        void afficherTracesChainage(std::vector<Element *> const &e, std::string const &chainage);
         //Accesseur
-        Config *getConfig();
+        Config *getConfig() const;
 
     private:
         //Les 4 boutons du bas du menu
@@ -91,8 +91,8 @@ class FenetrePrincipale : public QWidget
         FenetreConfig *fenetreConfig;
         //Fenêtre qui affiche les traces du chaînage réalisé
         FenetreTracesAbreges *fenetreTraces;
-        //Fenêtre pour initialiser les buts pour le chaînage arrière
-        FenetreChainageArriere *fenetreChainageArriere;
+        //Fenêtre pour initialiser les buts pour le chaînage avant/arrière
+        FenetreButChainage *fenetreChainageArriere;
 };
 
 #endif

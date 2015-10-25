@@ -18,7 +18,7 @@ Regle::~Regle()
 }
 
 
-/* Accesseur pour récupére l'élément suivant */
+/* Accesseur pour récupérer l'élément suivant */
 Regle *Regle::getSuivant() const
 {
     return m_suivant;
@@ -33,7 +33,7 @@ void Regle::setSuivant(Regle *r)
 
 
 /* Méthode qui remplit le tableau des prémisses */
-void Regle::remplirPremisse(vector<Element> const &tabPremisses)
+void Regle::remplirPremisse(vector<Element *> const &tabPremisses)
 {
     //Remplissage des prémisses
     for(unsigned int i=0; i<tabPremisses.size(); i++)
@@ -44,7 +44,7 @@ void Regle::remplirPremisse(vector<Element> const &tabPremisses)
 
 
 /* Méthode qui remplit le tableau des conclusions */
-void Regle::remplirConclusion(vector<Element> const &tabConclusions)
+void Regle::remplirConclusion(vector<Element *> const &tabConclusions)
 {
      //Remplissage des conclusions
     for(unsigned int i=0; i<tabConclusions.size(); i++)
@@ -55,14 +55,14 @@ void Regle::remplirConclusion(vector<Element> const &tabConclusions)
 
 
 /* Accesseur du tableau des prémisses */
-vector<Element> &Regle::getPremisse()
+vector<Element *> &Regle::getPremisse()
 {
     return m_premisse;
 }
 
 
 /* Accesseur du tableau des conclusions */
-vector<Element> &Regle::getConclusion()
+vector<Element *> &Regle::getConclusion()
 {
     return m_conclusion;
 }
@@ -78,12 +78,12 @@ string Regle::toString() const
             retour += "Si ";
         else
             retour += "ET ";
-        retour += m_premisse[i].toString();
+        retour += m_premisse[i]->toString();
     }
     retour += "alors ";
     for(unsigned int i=0; i<m_conclusion.size(); i++)
     {
-        retour += m_conclusion[i].toString();
+        retour += m_conclusion[i]->toString();
     }
     return retour;
 }

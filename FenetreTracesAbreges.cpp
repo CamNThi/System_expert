@@ -5,7 +5,7 @@ using namespace std;
 /* On passe en paramètres du constructeur la base de connaissance
 ainsi qu'un vecteur contenant les éléments ajoutés à la base de faits lors du chaînage
  et on indique le type de chaînage (avant, arriere ou mixte) */
-FenetreTracesAbreges::FenetreTracesAbreges(BaseDeConnaissances *b, vector<Element> const &e, string const &chainage) : QDialog()
+FenetreTracesAbreges::FenetreTracesAbreges(BaseDeConnaissances *b, vector<Element *> const &e, string const &chainage) : QDialog()
 {
     //Titre de la fenêtre
     setWindowTitle("Traces du chainage");
@@ -120,7 +120,7 @@ void FenetreTracesAbreges::afficherTracesCompletes()
     std::string faitsString = "";
     for(unsigned int i=0; i<elements.size(); i++)
     {
-        faitsString += elements[i].toString();
+        faitsString += elements[i]->toString();
         faitsString+="\n";
     }
     QString faits = QString::fromStdString(faitsString);

@@ -4,7 +4,7 @@ using namespace std;
 
 
 /* Constructeur */
-BaseDeConnaissances::BaseDeConnaissances() : debut(NULL)
+BaseDeConnaissances::BaseDeConnaissances() : debut(NULL), butChainage(NULL)
 {
 
 }
@@ -18,12 +18,12 @@ BaseDeConnaissances::~BaseDeConnaissances()
 
 
 /* Méthode qui va récupérer les éléments qui composent la règle */
-vector<Element> BaseDeConnaissances::getElements(string const &ligneTexte)
+vector<Element *> BaseDeConnaissances::getElements(string const &ligneTexte)
 {
     string ligne = ligneTexte;
 
     //Tableau qui va contenir les éléments
-    vector<Element> elements;
+    vector<Element *> elements;
 
     int indiceEt;
 
@@ -31,7 +31,7 @@ vector<Element> BaseDeConnaissances::getElements(string const &ligneTexte)
     do
     {
         //On créé un nouvel élément
-        Element e;
+        Element *e = new Element;
 
         //Stocke le résultat de la recherche pour le caractère
         int recherche;
@@ -57,8 +57,8 @@ vector<Element> BaseDeConnaissances::getElements(string const &ligneTexte)
         }
 
         //On initialise les valeurs
-        e.setAttribut(ligne.substr(0, recherche));
-        e.setOperateur(ligne.substr(recherche, nbCarOp));
+        e->setAttribut(ligne.substr(0, recherche));
+        e->setOperateur(ligne.substr(recherche, nbCarOp));
         string valeur = ligne.substr(recherche+nbCarOp);
 
         //On recherche s'il y a un "ET"
@@ -67,13 +67,13 @@ vector<Element> BaseDeConnaissances::getElements(string const &ligneTexte)
         //Cas où il y a un "ET", c'est qu'il y a d'autres éléments
         if(indiceEt != -1)
         {
-            e.setValeur(valeur.substr(0, indiceEt));
+            e->setValeur(valeur.substr(0, indiceEt));
             ligne = valeur.substr(indiceEt + 2);
         }
         //Sinon, c'est qu'on est donc à la fin de la ligne
         else
         {
-            e.setValeur(valeur);
+            e->setValeur(valeur);
         }
 
         //On ajoute l'élément au tableau
@@ -108,10 +108,10 @@ bool BaseDeConnaissances::remplirBR(string const &nomFichier)
             string conclusion = ligne.substr(ligne.find("->")+2);
 
             //On récupère les éléments qui composent la prémisse
-            vector<Element> e1 = getElements(premisse);
+            vector<Element *> e1 = getElements(premisse);
 
             //On récupère les éléments qui composent la conclusion
-            vector<Element> e2 = getElements(conclusion);
+            vector<Element *> e2 = getElements(conclusion);
 
             //On créé le premier élément de la liste
             Regle *r = new Regle();
@@ -228,7 +228,7 @@ string BaseDeConnaissances::afficheBF()
     {
         for(unsigned int i=0; i<baseDeFaits.size(); i++)
         {
-            retour += baseDeFaits[i].toString();
+            retour += baseDeFaits[i]->toString();
         }
     }
     return retour;
@@ -316,12 +316,12 @@ string BaseDeConnaissances::afficheReglesAppliquees(string const &chainage)
 
 /* Accesseurs */
 
-Regle *BaseDeConnaissances::getDebut()
+Regle *BaseDeConnaissances::getDebut() const
 {
     return debut;
 }
 
-vector<Element> &BaseDeConnaissances::getBaseDeFaits()
+vector<Element *> &BaseDeConnaissances::getBaseDeFaits()
 {
     return baseDeFaits;
 }
@@ -336,9 +336,9 @@ vector<Regle*> &BaseDeConnaissances::getReglesAppliqueesArriere()
     return reglesAppliqueesArriere;
 }
 
-vector<Element> &BaseDeConnaissances::getBut()
+Element *BaseDeConnaissances::getBut()
 {
-    return buts;
+    return butChainage;
 }
 
 
@@ -348,7 +348,7 @@ void BaseDeConnaissances::setDebut(Regle *r)
     debut = r;
 }
 
-void BaseDeConnaissances::setBut(Element const &e)
+void BaseDeConnaissances::setBut(Element *e)
 {
-    buts.push_back(e);
+    butChainage = e;
 }

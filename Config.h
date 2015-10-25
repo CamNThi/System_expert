@@ -14,7 +14,7 @@ class Config
         //Constructeur
         Config();
         //Modificateurs
-        void setTypeChainageAvant(const std::string &typeChainage);
+        void setTypeChainageAvant(std::string const &typeChainage);
         //Accesseurs
         std::string &getTypeChainageAvant();
 };

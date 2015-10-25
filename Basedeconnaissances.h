@@ -20,7 +20,7 @@ class BaseDeConnaissances
         //Destructeur
         ~BaseDeConnaissances();
         //Méthode qui va récupérer chaque élément qui composent la règle, contenus dans une ligne de texte
-        std::vector<Element> getElements(std::string const &ligneTexte);
+        std::vector<Element *> getElements(std::string const &ligneTexte);
         //Méthode qui va remplir la base de règles à partir d'un fichier .txt, elle renvoie vrai si le remplissage s'est bien passé
         bool remplirBR(std::string const &nomFichier);
         //Méthode qui va remplir la base de faits à partir d'un fichier .txt, elle renvoie vrai si le remplissage s'est bien passé
@@ -38,26 +38,26 @@ class BaseDeConnaissances
         //Méthode qui affiche les règles appliquées pour le chaînage avant ou le chaînage arrière
         std::string afficheReglesAppliquees(std::string const &chainage);
         //Accesseurs
-        Regle *getDebut();
-        std::vector<Element> &getBaseDeFaits();
+        Regle *getDebut() const;
+        std::vector<Element *> &getBaseDeFaits();
         std::vector<Regle *> &getReglesAppliqueesAvant();
         std::vector<Regle *> &getReglesAppliqueesArriere();
-        std::vector<Element> &getBut();
+        Element *getBut();
         //Modificateur
         void setDebut(Regle *r);
-        void setBut(Element const &e);
+        void setBut(Element *e);
 
     private:
         //Eléments qui servira de repère dans la liste chainée
         Regle *debut; //Pointe vers le 1er élément de la liste
         //Tableau qui contient la base de faits
-        std::vector<Element> baseDeFaits;
+        std::vector<Element *> baseDeFaits;
         //Tableau qui contient les règles appliquées pendant le chainage avant
-        std::vector<Regle*> reglesAppliqueesAvant;
+        std::vector<Regle *> reglesAppliqueesAvant;
         //Tableau qui contient les règles appliquées pendant le chaînage arrière
-        std::vector<Regle*> reglesAppliqueesArriere;
-        //Tableau qui contient les buts pour le chaînage arrière
-        std::vector<Element> buts;
+        std::vector<Regle *> reglesAppliqueesArriere;
+        //Variable qui contient le but à atteindre pour le chaînage
+        Element *butChainage;
 };
 
 #endif

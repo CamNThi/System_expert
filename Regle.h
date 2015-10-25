@@ -20,21 +20,21 @@ class Regle
         //Modificateur pour l'élément suivant de la liste
         void setSuivant(Regle *r);
         //Pour remplir le tableau des prémisses
-        void remplirPremisse(std::vector<Element> const &tabPremisses);
+        void remplirPremisse(const std::vector<Element *> &tabPremisses);
         //Pour remplir le tableau des conclusions
-        void remplirConclusion(std::vector<Element> const &tabConclusions);
+        void remplirConclusion(const std::vector<Element *> &tabConclusions);
         //Accesseur du tableau des prémisses
-        std::vector<Element> &getPremisse();
+        std::vector<Element *> &getPremisse();
         //Accesseur du tableau des conclusions
-        std::vector<Element> &getConclusion();
+        std::vector<Element *> &getConclusion();
         //Pour décrire la règle
         std::string toString() const;
 
     private:
         //Vecteur contenant les éléments de la prémisse
-        std::vector<Element> m_premisse;
+        std::vector<Element *> m_premisse;
         //Vecteur contenant les éléments de la conclusion
-        std::vector<Element> m_conclusion;
+        std::vector<Element *> m_conclusion;
         //Pointeur sur l'élément suivant
         Regle *m_suivant;
 };

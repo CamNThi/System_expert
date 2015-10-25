@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Basedeconnaissances.h"
+//#include "FenetrePrincipale.h"
 
 
 /* Moteur d'inférence qui va effectuer les chaînages */
@@ -14,15 +15,15 @@ class Moteur
         //Constructeur
         Moteur();
         //Méthode qui réalise un chaînage avant sur la base de connaissance et qui renvoie les éléments ajoutés à la base de faits
-        std::vector<Element> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
+        std::vector<Element *> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
         //Méthode qui lance le chaînage arrière sur la base de connaissance, et pour une liste de buts
-        std::vector<Element> chainageArriere(BaseDeConnaissances *base, std::vector<Element> &conclusions);
+        std::vector<Element *> chainageArriere(BaseDeConnaissances *base, std::vector<Element *> &but);
         //Méthode qui réalise un chaînage mixte sur la base de connaissance
-        std::vector<Element> chainageMixte(BaseDeConnaissances *base);
+        std::vector<Element *> chainageMixte(BaseDeConnaissances *base);
         //Effectue le chaînage arrière pour un but donné
-        void initChainageArriere(BaseDeConnaissances *base, Element &but, std::vector<Element> &faitsAjoutes);
+        void initChainageArriere(BaseDeConnaissances *base, Element *but, std::vector<Element *> &faitsAjoutes);
         //Vérifie l'existence d'un élément de conclusion dans un vecteur d'élément
-        bool elementPresent(std::vector<Element> &conclusion, const Element &e);
+        bool elementPresent(std::vector<Element *> &conclusion, const Element *e);
         //Méthode qui vérifie l'existence de la règle dans un vecteur de règles
         bool reglePresente(std::vector<Regle *> &vecteur_regles, Regle *ptr_regle);
         //Méthode qui va renvoyer les règles applicables pour la base de connaissance

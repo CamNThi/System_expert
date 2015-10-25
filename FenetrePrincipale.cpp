@@ -236,8 +236,15 @@ void FenetrePrincipale::chainageAvant()
     }
     else
     {
+        //On remet à zéro le but
+        baseDeConnaissances->setBut(NULL);
+
+        //On ouvre la fenêtre qui va permettre à l'utilisateur de renseigner le but à atteindre
+        fenetreChainageArriere = new FenetreButChainage(baseDeConnaissances, "avant");
+        fenetreChainageArriere->exec();
+
         //On effectue le chaînage avant en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur->chainageAvant(baseDeConnaissances, config->getTypeChainageAvant());
+        vector<Element *> e = moteur->chainageAvant(baseDeConnaissances, config->getTypeChainageAvant());
 
         //Mise à jour de la base de faits graphiquement
         refreshBF();
@@ -273,26 +280,43 @@ void FenetrePrincipale::chainageArriere()
     }
     else
     {
+        //On remet à zéro le but
+        baseDeConnaissances->setBut(NULL);
+
         //On ouvre la fenêtre qui va permettre à l'utilisateur de renseigner le but à atteindre
-        fenetreChainageArriere = new FenetreChainageArriere(baseDeConnaissances);
+        fenetreChainageArriere = new FenetreButChainage(baseDeConnaissances, "arriere");
         fenetreChainageArriere->exec();
 
-        //On effectue le chaînage arrière en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur->chainageArriere(baseDeConnaissances, baseDeConnaissances->getBut());
+        //Cas où le but n'a pas été rentré
+        if(baseDeConnaissances->getBut()==NULL)
+        {
+            //Mise à jour du message de confirmation
+            message->setText("Attention, vous devez rentrer un but pour ce type de chainage.");
+            message->setStyleSheet("color: red");
+        }
+        //Cas où le but a été rentré correctement
+        else
+        {
+            vector<Element *> buts;
+            buts.push_back(baseDeConnaissances->getBut());
 
-        //Mise à jour de la base de faits
-        refreshBF();
+            //On effectue le chaînage arrière en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
+            vector<Element *> e = moteur->chainageArriere(baseDeConnaissances, buts);
 
-        //On met à jour les labels au-dessus des zones de texte
-        label_BFInitial->setText("Base de fait avant chainage arriere:");
-        label_BFMoteur->setText("Base de fait apres chainage arriere:");
+            //Mise à jour de la base de faits
+            refreshBF();
 
-        //Mise à jour du message de confirmation
-        message->setText("Le chainage arriere s'est deroule avec succes.");
-        message->setStyleSheet("color: green");
+            //On met à jour les labels au-dessus des zones de texte
+            label_BFInitial->setText("Base de fait avant chainage arriere:");
+            label_BFMoteur->setText("Base de fait apres chainage arriere:");
 
-        //Fenêtre qui affiche les traces du chaînage
-        afficherTracesChainage(e, "arriere");
+            //Mise à jour du message de confirmation
+            message->setText("Le chainage arriere s'est deroule avec succes.");
+            message->setStyleSheet("color: green");
+
+            //Fenêtre qui affiche les traces du chaînage
+            afficherTracesChainage(e, "arriere");
+        }
     }
 }
 
@@ -314,22 +338,40 @@ void FenetrePrincipale::chainageMixte()
     }
     else
     {
-        //On effectue le chaînage mixte en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element> e = moteur->chainageMixte(baseDeConnaissances);
+        //On remet à zéro le but
+        baseDeConnaissances->setBut(NULL);
 
-        //Mise à jour de la base de faits
-        refreshBF();
+        //On ouvre la fenêtre qui va permettre à l'utilisateur de renseigner le but à atteindre
+        fenetreChainageArriere = new FenetreButChainage(baseDeConnaissances, "mixte");
+        fenetreChainageArriere->exec();
 
-        //On met à jour les labels au-dessus des zones de texte
-        label_BFInitial->setText("Base de fait avant chainage mixte:");
-        label_BFMoteur->setText("Base de fait apres chainage mixte:");
+        //Cas où le but n'a pas été rentré
+        if(baseDeConnaissances->getBut()==NULL)
+        {
+            //Mise à jour du message de confirmation
+            message->setText("Attention, vous devez rentrer un but pour ce type de chainage.");
+            message->setStyleSheet("color: red");
+        }
+        //Cas où le but a été rentré correctement
+        else
+        {
+            //On effectue le chaînage mixte en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
+            vector<Element *> e = moteur->chainageMixte(baseDeConnaissances);
 
-        //Mise à jour du message de confirmation
-        message->setText("Le chainage mixte s'est deroule avec succes.");
-        message->setStyleSheet("color: green");
+            //Mise à jour de la base de faits
+            refreshBF();
 
-        //Fenêtre qui affiche les traces du chaînage
-        afficherTracesChainage(e, "mixte");
+            //On met à jour les labels au-dessus des zones de texte
+            label_BFInitial->setText("Base de fait avant chainage mixte:");
+            label_BFMoteur->setText("Base de fait apres chainage mixte:");
+
+            //Mise à jour du message de confirmation
+            message->setText("Le chainage mixte s'est deroule avec succes.");
+            message->setStyleSheet("color: green");
+
+            //Fenêtre qui affiche les traces du chaînage
+            afficherTracesChainage(e, "mixte");
+        }
     }
 }
 
@@ -411,7 +453,7 @@ void FenetrePrincipale::refreshBF()
 /* Méthode qui lance l'affichage de la fenêtre des traces du chaînage réalisé
 On lui passe en paramètres un vecteur contenant les éléments ajoutés à la base de faits lors du chaînage
 On lui passe égalemente le type de chaînage réalisé (avant, arriere, mixte) */
-void FenetrePrincipale::afficherTracesChainage(vector<Element> const &e, const string &chainage)
+void FenetrePrincipale::afficherTracesChainage(vector<Element *> const &e, string const &chainage)
 {
     //On ouvre la fenêtre qui contient l'intégral des faits
     fenetreTraces = new FenetreTracesAbreges(baseDeConnaissances, e, chainage);
@@ -420,7 +462,7 @@ void FenetrePrincipale::afficherTracesChainage(vector<Element> const &e, const s
 
 
 /* Accesseur */
-Config *FenetrePrincipale::getConfig()
+Config *FenetrePrincipale::getConfig() const
 {
     return config;
 }
