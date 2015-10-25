@@ -8,6 +8,7 @@
 #include <QLabel>
 
 #include "Element.h"
+#include "Basedeconnaissances.h"
 
 
 /* Fenêtre qui va permettre de poser une question à l'utilisateur concernant la validité d'un fait */
@@ -21,14 +22,19 @@ class FenetreQuestionUtilisateur : public QDialog
     void quitter();
 
     public:
-        FenetreQuestionUtilisateur();
+        FenetreQuestionUtilisateur(BaseDeConnaissances *base, Element *e);
 
     private:
         QLabel *label_question;
+        QLabel *label_fait;
         QHBoxLayout *layout_boutons;
         QPushButton *bouton_oui;
         QPushButton *bouton_non;
         QVBoxLayout *layout_global;
+        //Pour retenir la base de connaissances
+        BaseDeConnaissances *baseDeConnaissances;
+        //Pour retenir l'élément concerné
+        Element *element;
 };
 
 #endif

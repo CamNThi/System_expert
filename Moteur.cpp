@@ -4,9 +4,10 @@ using namespace std;
 
 
 /* Constructeur */
-Moteur::Moteur()
+Moteur::Moteur(BaseDeConnaissances *base)
 {
-
+    //Pour retenir la base de connaissances
+    baseDeConnaissances = base;
 }
 
 
@@ -209,6 +210,9 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
     //Initialisation de l'iterateur de la base de règles
     Regle *cursor = base->getDebut();
 
+    //Pour retenir le numéro de l'élément de la prémisse à ajouter dans la base de faits
+    int numElementPremisse;
+
     //Tant qu'on est pas à la fin de la liste, on continue
     while(cursor!=NULL)
     {
@@ -222,12 +226,13 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
                 if(!elementPresent(BF,cursor->getPremisse()[i]))
                 {
                    initChainageArriere(base, cursor->getPremisse()[i], faitsAjoutes);
+                   numElementPremisse = i;
                  }
                 else
                 {
                     ++correspondance;
 
-                    //Cas où toutes les prémisses sont toutes dans la base de faits
+                    //Cas où toutes les prémisses sont dans la base de faits
                     if (correspondance == cursor->getPremisse().size())
                     {
                         base->retenirRegle(cursor, "arriere");
@@ -241,7 +246,9 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
                     //Cas où la règle est partiellement satisfaisante
                     else
                     {
-                        //On appelle une méthode de la fenêtre principale pour afficher la fenêtre de question à l'utilisateur
+                        //On affiche la fenêtre de question à l'utilisateur
+                        FenetreQuestionUtilisateur fenetreQuestionUtilisateur(baseDeConnaissances, cursor->getPremisse()[numElementPremisse++]);
+                        fenetreQuestionUtilisateur.exec();
                     }
 
                 }

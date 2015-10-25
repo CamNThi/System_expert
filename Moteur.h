@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Basedeconnaissances.h"
-//#include "FenetrePrincipale.h"
+#include "FenetreQuestionUtilisateur.h"
 
 
 /* Moteur d'inférence qui va effectuer les chaînages */
@@ -13,7 +13,7 @@ class Moteur
 {
     public:
         //Constructeur
-        Moteur();
+        Moteur(BaseDeConnaissances *base);
         //Méthode qui réalise un chaînage avant sur la base de connaissance et qui renvoie les éléments ajoutés à la base de faits
         std::vector<Element *> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
         //Méthode qui lance le chaînage arrière sur la base de connaissance, et pour une liste de buts
@@ -34,6 +34,10 @@ class Moteur
         void ajouterPremisse(BaseDeConnaissances *base, Regle *regle);
         //Méthode qui va supprimer une règle de la base de règles
         void supprimerRegle(BaseDeConnaissances *base, Regle *r);
+
+    private:
+        //Pour retenir la base de connaissances
+        BaseDeConnaissances *baseDeConnaissances;
 };
 
 #endif

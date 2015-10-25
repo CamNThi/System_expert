@@ -9,7 +9,7 @@ FenetrePrincipale::FenetrePrincipale() : QWidget()
     //On créé la base de connaissances
     baseDeConnaissances = new BaseDeConnaissances;
     //On créé le moteur
-    moteur = new Moteur;
+    moteur = new Moteur(baseDeConnaissances);
     //On créé la configuration de l'application
     config = new Config;
 
