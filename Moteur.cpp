@@ -22,27 +22,31 @@ vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const 
     //Pour indiquer si on a atteint le but
     bool butAtteint = false;
 
-    //On recherche une règle applicable
-    vector <Regle *> r = chercherRegleApplicableChainageAvant(base, typeChainage);
-    //Tant qu'on trouve une règle pour compléter la base de faits, on continue la recherche
-    while(r.size() != 0 && butAtteint==false)
+    //On effectue le chaînage dans le cas où le but n'est pas présent dans la base de faits, ou encore dans le cas où on a pas sélectionné de but
+    if(base->getBut()==NULL || base->getBut()!=NULL && !elementPresent(base->getBaseDeFaits(), base->getBut()))
     {
-        for(unsigned int i=0; i<r.size(); i++)
+        //On recherche une règle applicable
+        vector <Regle *> r = chercherRegleApplicableChainageAvant(base, typeChainage);
+        //Tant qu'on trouve une règle pour compléter la base de faits, on continue la recherche
+        while(r.size() != 0 && butAtteint==false)
         {
-            //On ajoute tous les éléments de la conclusion de la règle dans le vecteur
-            for(unsigned int j=0; j<r[i]->getConclusion().size(); j++)
+            for(unsigned int i=0; i<r.size(); i++)
             {
-                faitsAjoutes.push_back(r[i]->getConclusion()[j]);
-                if(base->getBut()!=NULL && *r[i]->getConclusion()[j] == *base->getBut())
+                //On ajoute tous les éléments de la conclusion de la règle dans le vecteur
+                for(unsigned int j=0; j<r[i]->getConclusion().size(); j++)
                 {
-                    butAtteint = true;
+                    faitsAjoutes.push_back(r[i]->getConclusion()[j]);
+                    if(base->getBut()!=NULL && *r[i]->getConclusion()[j] == *base->getBut())
+                    {
+                        butAtteint = true;
+                    }
                 }
+                ajouterConclusion(base, r[i]);
+                base->retenirRegle(r[i], "avant");
+                supprimerRegle(base, r[i]);
             }
-            ajouterConclusion(base, r[i]);
-            base->retenirRegle(r[i], "avant");
-            supprimerRegle(base, r[i]);
+            r = chercherRegleApplicableChainageAvant(base, typeChainage);
         }
-        r = chercherRegleApplicableChainageAvant(base, typeChainage);
     }
     return faitsAjoutes;
 }
@@ -54,23 +58,30 @@ vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base)
     vector<Element *> elementsAjoutes; //Vecteur qui va contenir les éléments ajoutés à la base de faits en tout
     vector<Element *> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant, puis pendant le chaînage arrière
 
-    do
+    //On effectue le chaînage dans le cas où le but n'est pas présent dans la base de faits
+    if(!elementPresent(base->getBaseDeFaits(), base->getBut()))
     {
-        //On effectue le chaînage avant
-        e = chainageAvant(base, "largeur");
-        //On renseigne les faits ajoutés
-        for(unsigned int i=0; i<e.size(); i++)
+        do
         {
-            elementsAjoutes.push_back(e[i]);
-        }
-        //On effectue un chaînage arrière sur la base de faits obtenue
-        e = chainageArriere(base, e);
-        //On renseigne les faits ajoutés
-        for(unsigned int i=0; i<e.size(); i++)
-        {
-            elementsAjoutes.push_back(e[i]);
-        }
-    }while(e.size() != 0); //Exécution de la boucle jusqu'à ce qu'on ne trouve plus de faits déductibles
+            //On effectue le chaînage avant
+            e = chainageAvant(base, "largeur");
+            //On renseigne les faits ajoutés
+            for(unsigned int i=0; i<e.size(); i++)
+            {
+             elementsAjoutes.push_back(e[i]);
+            }
+            //On effectue un chaînage arrière si on est coincé, s'il n'y a pas d'autres faits déductibles, et si on a pas atteint le but
+            if(!(elementsAjoutes.back() == base->getBut()))
+            {
+                e = chainageArriere(base, e);
+                //On renseigne les faits ajoutés
+                for(unsigned int i=0; i<e.size(); i++)
+                {
+                    elementsAjoutes.push_back(e[i]);
+                }
+            }
+        }while(e.size() != 0); //Exécution de la boucle jusqu'à ce qu'on ne trouve plus de faits déductibles
+    }
     return elementsAjoutes;
 }
 
