@@ -23,6 +23,32 @@ FenetreConfig::FenetreConfig(Config *configuration) : QDialog()
     layout_param1->addWidget(label_param1);
     layout_param1->addWidget(option1_param1);
     layout_param1->addWidget(option2_param1);
+    //Pour regrouper les options
+    param1 = new QButtonGroup;
+    param1->addButton(option1_param1);
+    param1->addButton(option2_param1);
+
+    //Création du paramètre 2
+    label_param2 = new QLabel;
+    label_param2->setText("Gestion des conflits. Lors des conflits, la regle qui a la priorite est : ");
+    option1_param2 = new QRadioButton("la regle qui apparait en premier dans la liste");
+    option2_param2 = new QRadioButton("la regle qui a le plus de premisses");
+    option3_param2 = new QRadioButton("la regle qui a le moins de premisses");
+    option4_param2 = new QRadioButton("la regle utilisee le plus recemment");
+    //Pour regrouper les options
+    param2 = new QButtonGroup;
+    param2->addButton(option1_param2);
+    param2->addButton(option2_param2);
+    param2->addButton(option3_param2);
+    param2->addButton(option4_param2);
+    if(configuration->getGestionConflit() == "ordre")
+        option1_param2->setChecked(true);
+    else if(configuration->getGestionConflit() == "nbPremisseSup")
+        option2_param2->setChecked(true);
+    else if(configuration->getGestionConflit() == "nbPremisseInf")
+        option3_param2->setChecked(true);
+    else if(configuration->getGestionConflit() == "recenceUtilisation")
+        option4_param2->setChecked(true);
 
     //Création des boutons
     bouton_valider = new QPushButton(QIcon("images/accept.png"), "Valider cette configuration");
@@ -35,6 +61,11 @@ FenetreConfig::FenetreConfig(Config *configuration) : QDialog()
     layout_global = new QVBoxLayout();
     layout_global->setAlignment(Qt::AlignTop);
     layout_global->addLayout(layout_param1);
+    layout_global->addWidget(label_param2);
+    layout_global->addWidget(option1_param2);
+    layout_global->addWidget(option2_param2);
+    layout_global->addWidget(option3_param2);
+    layout_global->addWidget(option4_param2);
     layout_global->addLayout(layout_boutons);
     setLayout(layout_global);
 
@@ -55,6 +86,14 @@ void FenetreConfig::configurerAppli()
         config->setTypeChainageAvant("profondeur");
     else
         config->setTypeChainageAvant("largeur");
+    if(option1_param2->isChecked())
+        config->setGestionConflit("ordre");
+    else if(option2_param2->isChecked())
+        config->setGestionConflit("nbPremisseSup");
+    else if(option3_param2->isChecked())
+        config->setGestionConflit("nbPremisseInf");
+    else if(option4_param2->isChecked())
+        config->setGestionConflit("recenceUtilisation");
     //Fermeture de la fenêtre
     quitter();
 }

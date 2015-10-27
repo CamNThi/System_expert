@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QLabel>
+#include <QButtonGroup>
 
 #include "Config.h"
 
@@ -28,7 +29,14 @@ class FenetreConfig : public QDialog
         QLabel *label_param1;
         QRadioButton *option1_param1;
         QRadioButton *option2_param1;
+        QButtonGroup *param1;
         QHBoxLayout *layout_param1;
+        QLabel *label_param2;
+        QRadioButton *option1_param2;
+        QRadioButton *option2_param2;
+        QRadioButton *option3_param2;
+        QRadioButton *option4_param2;
+        QButtonGroup *param2;
         QPushButton *bouton_valider;
         QPushButton *bouton_annuler;
         QHBoxLayout *layout_boutons;

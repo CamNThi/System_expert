@@ -11,8 +11,10 @@ Moteur::Moteur(BaseDeConnaissances *base)
 }
 
 
-/* Méthode qui réalise un chaînage avant sur la base de connaissance passée en paramètre */
-vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const &typeChainage)
+/* Méthode qui réalise un chaînage avant sur la base de connaissance passée en paramètre
+On renseigne également le type de chaînage (en profondeur ou en largeur)
+ainsi que la gestion des conflits (ordre, nbPremisseSup, nbPremisseInf) */
+vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const &typeChainage, string const &gestionConflit)
 {
     //Vecteur qu'on va retourner, avec la liste des éléments ajoutés à la base de faits
     vector<Element *> faitsAjoutes;
@@ -27,26 +29,61 @@ vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const 
     if(base->getBut()==NULL || base->getBut()!=NULL && !elementPresent(base->getBaseDeFaits(), base->getBut()))
     {
         //On recherche une règle applicable
-        vector <Regle *> r = chercherRegleApplicableChainageAvant(base, typeChainage);
+        vector <Regle *> r = chercherRegleApplicableChainageAvant(base);
+
+        //On trie les règles en fonction de la gestion des conflits, sauf dans le cas où on prends les règles dans l'ordre d'appariton
+        if(gestionConflit!="ordre")
+            trierRegles(r, gestionConflit);
+
         //Tant qu'on trouve une règle pour compléter la base de faits, on continue la recherche
         while(r.size() != 0 && butAtteint==false)
         {
-            for(unsigned int i=0; i<r.size(); i++)
+            //Si on est dans un chaînage en largeur, on applique toutes les règles trouvées
+            if(typeChainage == "largeur")
+            {
+                for(unsigned int i=0; i<r.size(); i++)
+                {
+                    //On ajoute tous les éléments de la conclusion de la règle dans le vecteur
+                    for(unsigned int j=0; j<r[i]->getConclusion().size(); j++)
+                    {
+                        faitsAjoutes.push_back(r[i]->getConclusion()[j]);
+                        if(base->getBut()!=NULL && *r[i]->getConclusion()[j] == *base->getBut())
+                        {
+                            butAtteint = true;
+                        }
+                    }
+                    ajouterConclusion(base, r[i]);
+                    base->retenirRegle(r[i], "avant");
+                    supprimerRegle(base, r[i]);
+                    //On incrémente l'indice de la règle qui indique sa récence d'utilisation
+                    r[i]->incUtilisation();
+                }
+            }
+            //Sinon, dans le cas d'un chaînage en profondeur, on applique juste une seule règle: la première du vecteur
+            else
             {
                 //On ajoute tous les éléments de la conclusion de la règle dans le vecteur
-                for(unsigned int j=0; j<r[i]->getConclusion().size(); j++)
+                for(unsigned int j=0; j<r[0]->getConclusion().size(); j++)
                 {
-                    faitsAjoutes.push_back(r[i]->getConclusion()[j]);
-                    if(base->getBut()!=NULL && *r[i]->getConclusion()[j] == *base->getBut())
+                    faitsAjoutes.push_back(r[0]->getConclusion()[j]);
+                    if(base->getBut()!=NULL && *r[0]->getConclusion()[j] == *base->getBut())
                     {
                         butAtteint = true;
                     }
                 }
-                ajouterConclusion(base, r[i]);
-                base->retenirRegle(r[i], "avant");
-                supprimerRegle(base, r[i]);
+                ajouterConclusion(base, r[0]);
+                base->retenirRegle(r[0], "avant");
+                supprimerRegle(base, r[0]);
+                //On incrémente l'indice de la règle qui indique sa récence d'utilisation
+                r[0]->incUtilisation();
             }
-            r = chercherRegleApplicableChainageAvant(base, typeChainage);
+
+             r = chercherRegleApplicableChainageAvant(base);
+
+            //On trie les règles en fonction de la gestion des conflits, sauf dans le cas où on prends les règles dans l'ordre d'appariton
+            if(gestionConflit!="ordre")
+                trierRegles(r, gestionConflit);
+
         }
     }
     return faitsAjoutes;
@@ -54,7 +91,7 @@ vector<Element *> Moteur::chainageAvant(BaseDeConnaissances *base, string const 
 
 
 /* Méthode qui réalise un chaînage mixte sur la base de connaissance */
-vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base)
+vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base, const std::string &gestionConflit)
 {
     vector<Element *> elementsAjoutes; //Vecteur qui va contenir les éléments ajoutés à la base de faits en tout
     vector<Element *> e; //Vecteur qui va contenir les éléments ajoutés à la base de faits pendant le chaînage avant, puis pendant le chaînage arrière
@@ -65,7 +102,7 @@ vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base)
         do
         {
             //On effectue le chaînage avant
-            e = chainageAvant(base, "largeur");
+            e = chainageAvant(base, "largeur", gestionConflit);
             //On renseigne les faits ajoutés
             for(unsigned int i=0; i<e.size(); i++)
             {
@@ -90,7 +127,7 @@ vector<Element *> Moteur::chainageMixte(BaseDeConnaissances *base)
 /* Méthode qui va renvoyer les règles applicables pour la base de connaissance
 Si le dernier paramètre indique un chainage avant en profondeur, une seule règle est déclenchée chaque niveau de déduction
 Sinon, s'il s'agit d'un chainage avant en largeur, on va enrichir la base de fait de tous les faits qu'on peut déduire à chaque niveau de déduction */
-vector<Regle *> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances *base, string const &typeChainage)
+vector<Regle *> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances *base)
 {
     //Curseur pour parcourir la liste (on le met au début de la liste)
     Regle *curseur = base->getDebut();
@@ -115,8 +152,6 @@ vector<Regle *> Moteur::chercherRegleApplicableChainageAvant(BaseDeConnaissances
         if(correspondance == curseur->getPremisse().size())
         {
             regles.push_back(curseur);
-            if(typeChainage == "profondeur")
-                break;
         }
 
         curseur = curseur->getSuivant();
@@ -236,6 +271,8 @@ void Moteur::initChainageArriere(BaseDeConnaissances *base, Element *but, vector
                     if (correspondance == cursor->getPremisse().size())
                     {
                         base->retenirRegle(cursor, "arriere");
+                        //On incrémente l'indice de la règle qui indique sa récence d'utilisation
+                        cursor->incUtilisation();
                         if(!elementPresent(BF, but))
                         {
                             //On retient la règle
@@ -279,7 +316,37 @@ bool Moteur::reglePresente(vector<Regle *> &vecteur_regles, Regle *ptr_regle)
         if (*ptr_regle == *vecteur_regles[i]){
             return true;
         }
-
     }
     return false;
+}
+
+
+/* Méthode qui va trier des règles, contenues dans un vecteur, passé en paramètre
+et en fonction de la gestion des conflits, indiquée en paramètres */
+void Moteur::trierRegles(std::vector<Regle *> &r, std::string const &gestionConflit)
+{
+    for(unsigned i=1; i<r.size(); i++)
+    {
+        //Cas où la règle a plus de prémisses que la règle précédente, dans la gestion des conflits qui prends la règle avec le plus de prémisses
+        //Ou cas où la règle a moins de prémisses que la règle précédente, dans la gestion des conflits qui prends la règle avec le moins de prémisses
+        if((gestionConflit == "nbPremisseSup" && r[i]->getPremisse().size() > r[i-1]->getPremisse().size()) || (gestionConflit == "nbPremisseInf" && r[i]->getPremisse().size() < r[i-1]->getPremisse().size()))
+        {
+            //On retient la règle précédente
+            Regle *tmp =  new Regle;
+            tmp = r[i-1];
+            //On va interchanger les deux règles
+            r[i-1] = r[i];
+            r[i] = tmp;
+        }
+        //Cas où on va trier la règle selon sa récence d'utilisation
+        else if(gestionConflit == "recenceUtilisation" && r[i]->getRecenceUtilisation() > r[i-1]->getRecenceUtilisation())
+        {
+            //On retient la règle précédente
+            Regle *tmp =  new Regle;
+            tmp = r[i-1];
+            //On va interchanger les deux règles
+            r[i-1] = r[i];
+            r[i] = tmp;
+        }
+    }
 }

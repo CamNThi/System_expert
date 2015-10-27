@@ -244,7 +244,7 @@ void FenetrePrincipale::chainageAvant()
         fenetreChainageArriere->exec();
 
         //On effectue le chaînage avant en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-        vector<Element *> e = moteur->chainageAvant(baseDeConnaissances, config->getTypeChainageAvant());
+        vector<Element *> e = moteur->chainageAvant(baseDeConnaissances, config->getTypeChainageAvant(), config->getGestionConflit());
 
         //Mise à jour de la base de faits graphiquement
         refreshBF();
@@ -356,7 +356,7 @@ void FenetrePrincipale::chainageMixte()
         else
         {
             //On effectue le chaînage mixte en récupérant la liste des éléments ajoutés à la base de faits, renvoyée par la méthode de chaînage
-            vector<Element *> e = moteur->chainageMixte(baseDeConnaissances);
+            vector<Element *> e = moteur->chainageMixte(baseDeConnaissances, config->getGestionConflit());
 
             //Mise à jour de la base de faits
             refreshBF();

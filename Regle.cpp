@@ -18,10 +18,17 @@ Regle::~Regle()
 }
 
 
-/* Accesseur pour récupérer l'élément suivant */
+/* Accesseur pour récupére l'élément suivant */
 Regle *Regle::getSuivant() const
 {
     return m_suivant;
+}
+
+
+/* Accesseur pour obtenir la récence d'utilisation de la règle */
+int Regle::getRecenceUtilisation() const
+{
+    return utilisation;
 }
 
 
@@ -32,8 +39,15 @@ void Regle::setSuivant(Regle *r)
 }
 
 
+/* Modificateur pour incrémenter la récence d'utilisation de la règle */
+void Regle::incUtilisation()
+{
+    utilisation++;
+}
+
+
 /* Méthode qui remplit le tableau des prémisses */
-void Regle::remplirPremisse(vector<Element *> const &tabPremisses)
+void Regle::remplirPremisse(const std::vector<Element *> &tabPremisses)
 {
     //Remplissage des prémisses
     for(unsigned int i=0; i<tabPremisses.size(); i++)
@@ -44,7 +58,7 @@ void Regle::remplirPremisse(vector<Element *> const &tabPremisses)
 
 
 /* Méthode qui remplit le tableau des conclusions */
-void Regle::remplirConclusion(vector<Element *> const &tabConclusions)
+void Regle::remplirConclusion(const std::vector<Element *> &tabConclusions)
 {
      //Remplissage des conclusions
     for(unsigned int i=0; i<tabConclusions.size(); i++)

@@ -17,8 +17,12 @@ class Regle
         ~Regle();
         //Accesseur pour l'élément suivant de la liste
         Regle *getSuivant() const;
+        //Accesseur pour obtenir la récence d'utilisation de la règle
+        int getRecenceUtilisation() const;
         //Modificateur pour l'élément suivant de la liste
         void setSuivant(Regle *r);
+        //Modificateur pour incrémenter la récence d'utilisation de la règle
+        void incUtilisation();
         //Pour remplir le tableau des prémisses
         void remplirPremisse(const std::vector<Element *> &tabPremisses);
         //Pour remplir le tableau des conclusions
@@ -37,6 +41,8 @@ class Regle
         std::vector<Element *> m_conclusion;
         //Pointeur sur l'élément suivant
         Regle *m_suivant;
+        //Indice pour indiquer la récence d'utilisation de la règle
+        int utilisation;
 };
 
 //On redéfinit l'opérateur de comparaison pour pouvoir comparer deux règled

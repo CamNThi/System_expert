@@ -15,11 +15,11 @@ class Moteur
         //Constructeur
         Moteur(BaseDeConnaissances *base);
         //Méthode qui réalise un chaînage avant sur la base de connaissance et qui renvoie les éléments ajoutés à la base de faits
-        std::vector<Element *> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
+        std::vector<Element *> chainageAvant(BaseDeConnaissances *base, std::string const &typeChainage, const std::string &gestionConflit);
         //Méthode qui lance le chaînage arrière sur la base de connaissance, et pour une liste de buts
         std::vector<Element *> chainageArriere(BaseDeConnaissances *base, std::vector<Element *> &but);
         //Méthode qui réalise un chaînage mixte sur la base de connaissance
-        std::vector<Element *> chainageMixte(BaseDeConnaissances *base);
+        std::vector<Element *> chainageMixte(BaseDeConnaissances *base, const std::string &gestionConflit);
         //Effectue le chaînage arrière pour un but donné
         void initChainageArriere(BaseDeConnaissances *base, Element *but, std::vector<Element *> &faitsAjoutes);
         //Vérifie l'existence d'un élément de conclusion dans un vecteur d'élément
@@ -27,13 +27,15 @@ class Moteur
         //Méthode qui vérifie l'existence de la règle dans un vecteur de règles
         bool reglePresente(std::vector<Regle *> &vecteur_regles, Regle *ptr_regle);
         //Méthode qui va renvoyer les règles applicables pour la base de connaissance
-        std::vector<Regle*> chercherRegleApplicableChainageAvant(BaseDeConnaissances *base, std::string const &typeChainage);
+        std::vector<Regle*> chercherRegleApplicableChainageAvant(BaseDeConnaissances *base);
         //Méthode qui va ajouter la conclusion de la règle passée en paramètres à la base de faits
         void ajouterConclusion(BaseDeConnaissances *base, Regle *regle);
         //Méthode qui va ajouter la prémisse de la règle passée en paramètres à la base de faits
         void ajouterPremisse(BaseDeConnaissances *base, Regle *regle);
         //Méthode qui va supprimer une règle de la base de règles
         void supprimerRegle(BaseDeConnaissances *base, Regle *r);
+        //Méthode qui va trier des règles, contenues dans un vecteur et en fonction d'un paramètre
+        void trierRegles(std::vector<Regle *> &r, std::string const &gestionConflit);
 
     private:
         //Pour retenir la base de connaissances
