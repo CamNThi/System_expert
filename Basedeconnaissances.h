@@ -21,6 +21,8 @@ class BaseDeConnaissances
         ~BaseDeConnaissances();
         //Méthode qui va récupérer chaque élément qui composent la règle, contenus dans une ligne de texte
         std::vector<Element *> getElements(std::string const &ligneTexte);
+        
+        
         //Méthode qui va remplir la base de règles à partir d'un fichier .txt, elle renvoie vrai si le remplissage s'est bien passé
         bool remplirBR(std::string const &nomFichier);
         //Méthode qui va remplir la base de faits à partir d'un fichier .txt, elle renvoie vrai si le remplissage s'est bien passé
@@ -46,6 +48,16 @@ class BaseDeConnaissances
         //Modificateur
         void setDebut(Regle *r);
         void setBut(Element *e);
+        
+        // Bloc Cohérence de règles
+        //Recherche d'attributs d'element identiques dans la conclusion
+        bool attributPresent(std::vector<Element *> &conclusion, const Element *e);
+        //Recherche d'attributs doublon present dans la premisse
+        bool Doublon(std::vector<Element *> &vector_to_check, const Element *value);
+        //Verifie la cohérence d'une règle, utilise attributPresent et Doublon pour le faire
+        bool RegleCoherente(std::vector<Element *> &premisse, std::vector<Element *> &conclusion);
+        // factorisation utilisé dans RemplirBR pour encapsuler la condition de cohérence
+        Regle * AjouteRegle(std::vector<Element *> &premisse, std::vector<Element *> &conclusion);
 
     private:
         //Eléments qui servira de repère dans la liste chainée

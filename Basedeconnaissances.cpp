@@ -107,36 +107,33 @@ bool BaseDeConnaissances::remplirBR(string const &nomFichier)
             string premisse = ligne.substr(0, ligne.find("->"));
             string conclusion = ligne.substr(ligne.find("->")+2);
 
-            //On récupère les éléments qui composent la prémisse
-            vector<Element *> e1 = getElements(premisse);
-
-            //On récupère les éléments qui composent la conclusion
-            vector<Element *> e2 = getElements(conclusion);
-
-            //On créé le premier élément de la liste
-            Regle *r = new Regle();
-            //On initialise cet élément
-            r->remplirPremisse(e1);
-            r->remplirConclusion(e2);
-            //On met l'élément suivant à NULL puisqu'il s'agit du dernier élément de la liste
-            r->setSuivant(NULL);
-
-            //On a pas commencé à remplir la liste, celle-ci est encore vide
-            if(debut == NULL)
-            {
-                //On met à jour le curseur
-                curseur = r;
-                //On renseigne le 1er élément de la liste
-                debut = r;
+            // récupération des vecteurs avant vérification de cohérance
+            std::vector<Element *> vpremisse = getElements(premisse);
+            std::vector<Element *> vconclusion = getElements(conclusion);
+          
+            
+            //Vérification de cohérence
+            if(RegleCoherente(vpremisse,vconclusion)){
+                //Ajout que les regles cohérentes
+                Regle *r = this->AjouteRegle(vpremisse,vconclusion);
+                
+                if(debut == NULL)
+                    {
+                    //On met à jour le curseur
+                        curseur = r;
+                        //On renseigne le 1er élément de la liste
+                        debut = r;
+                    }
+                    //Sinon, la liste est non vide
+                     else
+                    {
+                     //On met à jour l'élément suivant du curseur (qui n'est plus le dernier élément maintenant)
+                        curseur->setSuivant(r);
+                        //On met à jour le curseur
+                        curseur = r;
+                    }
             }
-            //Sinon, la liste est non vide
-            else
-            {
-                //On met à jour l'élément suivant du curseur (qui n'est plus le dernier élément maintenant)
-                curseur->setSuivant(r);
-                //On met à jour le curseur
-                curseur = r;
-            }
+         
         }
 
         //Fermeture du fichier
@@ -149,6 +146,8 @@ bool BaseDeConnaissances::remplirBR(string const &nomFichier)
         return false;
     }
 }
+
+
 
 
 /* Méthode qui va remplir la base de faits à partir d'un fichier .txt, elle renvoie vrai si le remplissage s'est bien passé */
@@ -352,3 +351,76 @@ void BaseDeConnaissances::setBut(Element *e)
 {
     butChainage = e;
 }
+
+
+/* Vérifie l'unicité d'un attribut des éléments de conclusion */
+bool BaseDeConnaissances::attributPresent(vector<Element *> &conclusion, const Element *e)
+{
+    //si l'attribut des élément est dans le vecteur de conclusions
+    for (unsigned i=0; i <conclusion.size(); i++){
+        if (e->getAttribut() == conclusion[i]->getAttribut()){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//verification de doublon dans un vecteur
+bool BaseDeConnaissances::Doublon(std::vector<Element*> &vector_to_check, const Element* value){
+    
+    int check = 0;
+        for(int i=0; i< vector_to_check.size(); ++i){
+            if(value->getAttribut() == vector_to_check[i]->getAttribut()){
+                check += 1; 
+            }
+            // L'element ne doit pas être présent  plus d'une fois
+            if(check > 1){
+                return true;
+            }
+        }
+        //L'element n'est présent qu'une fois 
+        return false;
+    }
+
+//Vérifie la cohérence des règles sur la base 
+// "Une règle ayant des attribut distinct est considérée comme cohérente !
+bool BaseDeConnaissances::RegleCoherente(std::vector<Element *> &premisse, std::vector<Element *> &conclusion){
+    // un doublon d'attribut d'element est présent dans les pemisses 
+    
+    for(unsigned i=0; i < premisse.size(); ++i){;
+        //Verification des premisses  ou  premisse et conclusion
+        if(this->Doublon(premisse, premisse[i])||this->attributPresent(conclusion,premisse[i]) ){
+            //cout<< "Doublon d'attibuts sur les premisse ou entre premisse et conclusion";
+            return false;
+            }
+        }
+    
+    //Doublon présent sur les conclusions
+    for(unsigned i=0; i < conclusion.size(); ++i){
+        if(Doublon(conclusion,conclusion[i])){
+            //cout<< "Doublon d'attibuts au sein de la conclusion";
+            return false;
+            } 
+        }   
+        // Aucun doublon sur la règle !  Elle est cohérente. 
+        return true;
+    }
+
+//Factorisation du bloc d'ajout de règle
+Regle * BaseDeConnaissances::AjouteRegle(std::vector<Element *> &premisse, std::vector<Element *> &conclusion){
+    //On récupère les éléments qui composent la prémisse
+    vector<Element *> e1 = premisse;
+
+    //On récupère les éléments qui composent la conclusion
+    vector<Element *> e2 = conclusion;
+    //On créé le premier élément de la liste
+    Regle *r = new Regle();
+    //On initialise cet élément
+    r->remplirPremisse(e1);
+    r->remplirConclusion(e2);
+    //On met l'élément suivant à NULL puisqu'il s'agit du dernier élément de la liste
+    r->setSuivant(NULL);
+
+    return r;
+    }
